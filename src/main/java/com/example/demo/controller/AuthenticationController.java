@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AuthenticationRequest;
 import com.example.demo.dto.AuthenticationResponse;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.service.CustomUserDetailsService;
 import com.example.demo.util.JwtUtil;
@@ -23,7 +24,7 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
         // Tìm kiếm người dùng trong cơ sở dữ liệu
         User user = customUserDetailsService.findByUsername(authenticationRequest.getUsername());
@@ -37,10 +38,12 @@ public class AuthenticationController {
         }
 
         // Tạo JWT token nếu xác thực thành công
-        final String jwt = jwtUtil.generateToken(user);
+        final String token = jwtUtil.generateToken(user);
 
         // Trả về JWT token trong response
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        UserDTO userDto = new UserDTO(user);
+
+        return ResponseEntity.ok(new AuthenticationResponse(userDto,token));
     }
 
     // Xử lý ngoại lệ toàn cục nếu cần

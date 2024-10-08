@@ -32,4 +32,5 @@ public class User {
     private Date createDate;
     private String status;
     private Boolean isDelete;
+    
 }
