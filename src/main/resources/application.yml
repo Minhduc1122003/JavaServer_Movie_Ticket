@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: buy-ticket-online
+    
+open:
+  api:
+    title: API Document
+    version: v1.0.0
+    description: Mota API Service
+    serverUrl: http://localhost:9011/
+    serverName: Server Spring Boot
