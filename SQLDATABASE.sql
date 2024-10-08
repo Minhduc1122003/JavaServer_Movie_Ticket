@@ -768,8 +768,13 @@ LEFT JOIN
 
 
 
-	/* Ngân - store phim sắp chiếu */
-	USE [APP_MOVIE_TICKET]
+
+
+
+/* store -------------------------------------------------*/
+
+-- Ngân-Store phim sắp chiếu
+USE [APP_MOVIE_TICKET]
 GO
 SET ANSI_NULLS ON
 GO
@@ -815,3 +820,5 @@ GROUP BY
     c.CinemaName, c.Address, m.CinemaID;  -- Đã thêm CinemaID trước đó
 
 END
+
+

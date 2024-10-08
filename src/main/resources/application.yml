@@ -1,6 +1,6 @@
 spring:
   application:
-    name: buy-ticket-online
+    name: JavaServer_Movie_Ticket
     
 open:
   api:
