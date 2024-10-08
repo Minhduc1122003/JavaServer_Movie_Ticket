@@ -765,3 +765,53 @@ LEFT JOIN
 LEFT JOIN 
     Cinemas c ON m.CinemaID = c.CinemaID
         */
+
+
+
+	/* Ngân - store phim sắp chiếu */
+	USE [APP_MOVIE_TICKET]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[getMoviesDangChieu] 
+AS
+BEGIN
+SELECT 
+    m.MovieID,
+    m.Title,
+    m.Description,
+    m.Duration,
+    m.ReleaseDate,
+    m.PosterUrl,
+    m.TrailerUrl,
+    m.Age,  -- Chọn thêm trường Age
+    m.SubTitle, 
+    m.Voiceover,
+    ( 
+        SELECT STRING_AGG(g.GenreName, ', ') 
+        FROM MovieGenre mg
+        JOIN Genre g ON mg.IdGenre = g.IdGenre
+        WHERE mg.MovieID = m.MovieID
+    ) AS Genres, 
+    c.CinemaName,
+    c.Address AS CinemaAddress,
+    STRING_AGG(r.Content, ' | ') AS ReviewContents, 
+    ROUND(AVG(r.Rating), 2) AS AverageRating, 
+    COUNT(r.IdRate) AS ReviewCount 
+FROM 
+    Movies m
+LEFT JOIN 
+    Cinemas c ON m.CinemaID = c.CinemaID
+LEFT JOIN  
+    Rate r ON m.MovieID = r.MovieID
+WHERE 
+    m.StatusMovie = N'Sắp chiếu' 
+GROUP BY 
+    m.MovieID, m.Title, m.Description, m.Duration, m.ReleaseDate, 
+    m.PosterUrl, m.TrailerUrl, m.Age,  -- Thêm Age vào GROUP BY
+    m.SubTitle, m.Voiceover, 
+    c.CinemaName, c.Address, m.CinemaID;  -- Đã thêm CinemaID trước đó
+
+END
