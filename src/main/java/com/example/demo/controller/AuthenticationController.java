@@ -27,11 +27,13 @@ public class AuthenticationController {
     @PostMapping("/api/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
         // Tìm kiếm người dùng trong cơ sở dữ liệu
+    	System.out.println(""+authenticationRequest.getUsername());
         User user = customUserDetailsService.findByUsername(authenticationRequest.getUsername());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tên đăng nhập hoặc mật khẩu.");
         }
-        
+    	System.out.println(""+authenticationRequest.getPassword());
+
         // So sánh mật khẩu
         if (!user.getPassword().equals(authenticationRequest.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai mật khẩu");

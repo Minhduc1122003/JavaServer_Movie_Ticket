@@ -18,30 +18,29 @@ import com.example.demo.filter.JwtRequestFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
-	@Autowired
+
+    @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-	@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(request -> {
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowCredentials(true);
-                config.addAllowedOrigin("http://localhost:3000"); // React app URL
-                config.addAllowedHeader("*");
-                config.addAllowedMethod("*");
-                return config;
-            }))
-            .authorizeHttpRequests(authorize -> authorize
-            		.anyRequest().permitAll()
-            )
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Đăng ký bộ lọc
-
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true);
+            config.addAllowedOriginPattern("*");
+            config.addAllowedHeader("*");
+            config.addAllowedMethod("*");
+            return config;
+        }))
+        .authorizeHttpRequests(authorize -> authorize
+            .anyRequest().permitAll()  // Cho phép tất cả các request không cần xác thực
+        )
+        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

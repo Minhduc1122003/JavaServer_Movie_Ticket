@@ -41,11 +41,17 @@ public class JwtUtil {
 
     // Phương thức lấy username từ token
     public String extractUsername(String token) {
+        if (token == null || token.isEmpty()) {
+            return null; // Nếu token trống, trả về null
+        }
         return extractAllClaims(token).getSubject();
     }
 
     // Phương thức kiểm tra token hết hạn chưa
     public boolean isTokenExpired(String token) {
+        if (token == null || token.isEmpty()) {
+            return true; // Nếu token trống, coi như đã hết hạn
+        }
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
