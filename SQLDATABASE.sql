@@ -111,41 +111,11 @@ CREATE TABLE Favourite (
 );
 go
 CREATE TABLE BuyTicket (
-    BuyTicketId INT PRIMARY KEY IDENTITY(1,1),
+    BuyTicketId INT PRIMARY KEY,
     UserId INT NOT NULL,
     MovieID INT NOT NULL,
     FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
-);
-go
-CREATE TABLE BuyTicketInfo (
-    BuyTicketInfoId INT PRIMARY KEY IDENTITY(1,1),
-    BuyTicketId INT NOT NULL,
-    Quantity int NOT NULL,
-    CreateDate Datetime NOT NULL,
-    TotalPrice float NOT NULL,
-    ComboID int,
-    FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
-);
-
-go
-
-CREATE TABLE ComBo (
-    ComboID INT PRIMARY KEY IDENTITY(1,1),
-    BuyTicketInfoId INT NOT NULL,
-    Quantity int NOT NULL,
-    Price float NOT NULL,
-    FOREIGN KEY (BuyTicketInfoId) REFERENCES BuyTicketInfo(BuyTicketInfoId),
-);
-
-go
-CREATE TABLE Ticket(
-    BuyTicketId INT NOT NULL,
-    Price float NOT NULL,
-    ChairCode Nvarchar(10),
-    CinemaRoomID INT PRIMARY KEY,
-    FOREIGN KEY (CinemaRoomID) REFERENCES CinemaRoom(CinemaRoomID),
-    FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
 );
 go
 
@@ -159,6 +129,30 @@ CREATE TABLE Showtime (
     CONSTRAINT FK_CinemaRoomID FOREIGN KEY (CinemaRoomID) REFERENCES CinemaRoom(CinemaRoomID)
 );
 GO
+CREATE TABLE BuyTicketInfo (
+    BuyTicketInfoId INT PRIMARY KEY IDENTITY(1,1),
+    BuyTicketId INT NOT NULL,
+    Quantity int NOT NULL,
+    CreateDate Datetime NOT NULL,
+    TotalPrice float NOT NULL,
+    ComboID int,
+	ShowtimeID int not null,
+    FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
+    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID)
+);
+
+go
+
+CREATE TABLE ComBo (
+    ComboID INT PRIMARY KEY IDENTITY(1,1),
+    BuyTicketInfoId INT NOT NULL,
+    Quantity int NOT NULL,
+    Price float NOT NULL,
+    FOREIGN KEY (BuyTicketInfoId) REFERENCES BuyTicketInfo(BuyTicketInfoId),
+);
+
+go
+
 
 -- tạo bảng chứa ghế
 CREATE TABLE Seats (
@@ -182,7 +176,15 @@ CREATE TABLE SeatReservation (
     CONSTRAINT FK_SeatID FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)
 );
 GO
+-- tạo bảng trung gian chứa ghế và vé
 
+CREATE TABLE TicketSeat (
+    TicketSeatID INT PRIMARY KEY IDENTITY(1,1), -- Khóa chính tự động tăng
+    BuyTicketId INT NOT NULL,                   -- Mã vé đã mua
+    SeatID INT NOT NULL,                        -- Mã ghế đã đặt
+    FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),  -- Ràng buộc khóa ngoại với BuyTicket
+    FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
+);
 
 -- insert:
 -- BẢNG Users 
@@ -523,8 +525,54 @@ go
 
 
 
+INSERT INTO BuyTicket (BuyTicketId,UserId, MovieID)
+VALUES (1,1, 1);
+INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice,ShowtimeID)
+VALUES (1, 3, GETDATE(), 300.0,1);  -- Số lượng ghế là 3, giá vé là 300
+INSERT INTO TicketSeat (BuyTicketId, SeatID)
+VALUES (1, 14), (1, 15), (1, 16);
+INSERT INTO SeatReservation (ShowtimeID, SeatID,Status)
+VALUES (1,14,1),
+ (1,15,1),
+ (1,16,1);
+
+select * from SeatReservation
+/*
+select * from BuyTicket
+SELECT 
+    bt.BuyTicketId, 
+    bt.UserId, 
+    bt.MovieID, 
+	mv.Title,
+    bti.Quantity, 
+    bti.CreateDate, 
+    bti.TotalPrice,
+    STRING_AGG(ss.ChairCode, ', ') AS Seats,  -- Gộp các ChairCode thành một chuỗi
+    st.StartTime AS StartTime  -- Lấy thời gian chiếu từ bảng Showtime
+	
+FROM 
+    BuyTicket bt
+JOIN 
+    BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
+JOIN 
+    TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
+JOIN 
+    Seats ss ON ts.SeatID = ss.SeatID  -- Lấy tên ghế từ bảng Seats
+JOIN 
+    Showtime st ON bti.ShowtimeID = st.ShowtimeID  -- Kết nối với bảng Showtime
+JOIN Movies mv ON st.MovieID = mv.MovieID -- Kết nối với bảng Movie
+GROUP BY 
+    bt.BuyTicketId, 
+    bt.UserId, 
+    bt.MovieID, 
+    bti.Quantity, 
+    bti.CreateDate, 
+    bti.TotalPrice,
+    st.StartTime,	mv.Title;  -- Đảm bảo thêm st.Showtime vào GROUP BY
 
 
+
+	*/
 
 /*
 SELECT * FROM Showtime WHERE MovieID =2
@@ -895,3 +943,54 @@ GROUP BY
 
 
 END
+
+-- duc Store: 
+CREATE PROCEDURE InsertBuyTicket
+    @BuyTicketId INT,
+    @UserId INT,
+    @MovieID INT,
+    @Quantity INT,
+    @TotalPrice FLOAT,
+    @ShowtimeID INT,
+    @SeatIDs NVARCHAR(MAX) -- List of SeatIDs as a comma-separated string
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Insert into BuyTicket
+    INSERT INTO BuyTicket (BuyTicketId, UserId, MovieID)
+    VALUES (@BuyTicketId, @UserId, @MovieID);
+
+    -- Insert into BuyTicketInfo
+    INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice, ShowtimeID)
+    VALUES (@BuyTicketId, @Quantity, GETDATE(), @TotalPrice, @ShowtimeID);
+
+    -- Insert into TicketSeat and SeatReservation
+    DECLARE @SeatID INT;
+    DECLARE @pos INT;
+
+    -- Split the comma-separated list of SeatIDs
+    WHILE LEN(@SeatIDs) > 0
+    BEGIN
+        SET @pos = CHARINDEX(',', @SeatIDs);
+        IF @pos = 0
+        BEGIN
+            SET @SeatID = CAST(@SeatIDs AS INT);
+            SET @SeatIDs = ''; -- Remove the processed SeatID
+        END
+        ELSE
+        BEGIN
+            SET @SeatID = CAST(LEFT(@SeatIDs, @pos - 1) AS INT);
+            SET @SeatIDs = STUFF(@SeatIDs, 1, @pos, ''); -- Remove the processed SeatID
+        END
+
+        -- Insert into TicketSeat
+        INSERT INTO TicketSeat (BuyTicketId, SeatID)
+        VALUES (@BuyTicketId, @SeatID);
+
+        -- Insert into SeatReservation
+        INSERT INTO SeatReservation (ShowtimeID, SeatID, Status)
+        VALUES (@ShowtimeID, @SeatID, 1); -- Assuming Status is 1 for reserved
+    END
+END
+GO
