@@ -175,6 +175,8 @@ BEGIN
 END
 GO
 
+
+
 -- Ngan Store: 
 USE [APP_MOVIE_TICKET]
 GO
@@ -190,6 +192,13 @@ BEGIN
     INSERT INTO Favourite (MovieID, UserId) 
     VALUES (@movieId, @userId);
 END
+GO
+
+
+
+
+
+
 
 -- Phuc Store:
 GO
@@ -239,3 +248,4 @@ GROUP BY
     c.CinemaName, c.Address, m.CinemaID;  -- Đã thêm CinemaID trước đó
 
 END
+GO
