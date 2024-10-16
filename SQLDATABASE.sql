@@ -187,7 +187,44 @@ CREATE TABLE TicketSeat (
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),  -- Ràng buộc khóa ngoại với BuyTicket
     FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
 );
-
+/*
+SELECT 
+    BT.BuyTicketId,
+    BTI.CreateDate,
+    BTI.Quantity,
+    BTI.TotalPrice,
+    M.Title AS MovieTitle,
+    M.PosterUrl,
+    ST.ShowtimeDate,
+    ST.StartTime,
+    C.CinemaName,
+    CR.CinemaRoomID,
+    STRING_AGG(S.ChairCode, ', ') AS SeatNumbers
+FROM 
+    BuyTicket BT
+INNER JOIN 
+    BuyTicketInfo BTI ON BT.BuyTicketId = BTI.BuyTicketId
+INNER JOIN 
+    Movies M ON BT.MovieID = M.MovieID
+INNER JOIN 
+    Showtime ST ON BTI.ShowtimeID = ST.ShowtimeID
+INNER JOIN 
+    CinemaRoom CR ON ST.CinemaRoomID = CR.CinemaRoomID
+INNER JOIN 
+    Cinemas C ON CR.CinemaID = C.CinemaID
+INNER JOIN 
+    TicketSeat TS ON BT.BuyTicketId = TS.BuyTicketId
+INNER JOIN 
+    Seats S ON TS.SeatID = S.SeatID
+WHERE 
+    BT.UserId = 1
+GROUP BY 
+    BT.BuyTicketId, BTI.CreateDate, BTI.Quantity, BTI.TotalPrice, 
+    M.Title, M.PosterUrl, ST.ShowtimeDate, ST.StartTime, 
+    C.CinemaName, CR.CinemaRoomID
+ORDER BY 
+    BTI.CreateDate DESC
+	*/
 -- insert:
 -- BẢNG Users 
 INSERT INTO Users (UserName, Password, Email, FullName, PhoneNumber, Photo, Role, CreateDate, Status,IsDelete)
