@@ -184,7 +184,7 @@ CREATE TABLE TicketSeat (
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),  -- Ràng buộc khóa ngoại với BuyTicket
     FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
 );
-
+/*
 SELECT 
     BT.BuyTicketId,
     BTI.CreateDate,
@@ -221,7 +221,7 @@ GROUP BY
     C.CinemaName, CR.CinemaRoomID
 ORDER BY 
     BTI.CreateDate DESC
-
+	*/
 -- insert:
 -- BẢNG Users 
 INSERT INTO Users (UserName, Password, Email, FullName, PhoneNumber, Photo, Role, CreateDate, Status,IsDelete)
