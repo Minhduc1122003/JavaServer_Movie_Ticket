@@ -572,6 +572,7 @@ VALUES (1,14,1),
  (1,15,1),
  (1,16,1);
 
+
 /*
 select * from BuyTicket
 SELECT 

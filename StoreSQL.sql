@@ -246,6 +246,72 @@ GROUP BY
     m.PosterUrl, m.TrailerUrl, m.Age,  -- Thêm Age vào GROUP BY
     m.SubTitle, m.Voiceover, 
     c.CinemaName, c.Address, m.CinemaID;  -- Đã thêm CinemaID trước đó
+END
+GO
+
+
+
+
+--Hyn Store: findDetailsByBuyTicketId
+USE [APP_MOVIE_TICKET]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[findDetailsByBuyTicketId] 
+@BuyTicketId INT
+AS
+BEGIN
+SELECT 
+    bt.BuyTicketId, 
+    bt.UserId, 
+    bt.MovieID, 
+    mv.Title,
+    bti.Quantity, 
+    bti.CreateDate, 
+    bti.TotalPrice,
+    STRING_AGG(ss.ChairCode, ', ') AS Seats,  -- Gộp các ChairCode thành một chuỗi
+    st.ShowtimeDate,                          -- Ngày chiếu từ bảng Showtime
+    st.StartTime AS StartTime,                -- Lấy thời gian chiếu từ bảng Showtime
+    mv.Price AS TicketPrice,                  -- Đơn giá của vé từ bảng Movies
+    mv.SubTitle,                              -- Thêm thông tin phụ đề
+    mv.Voiceover,                             -- Thêm thông tin lòng tiếng
+    cr.CinemaRoomID,                          -- Thêm thông tin phòng chiếu
+    c.CinemaName                              -- Thêm thông tin tên rạp
+FROM 
+    BuyTicket bt
+JOIN 
+    BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
+JOIN 
+    TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
+JOIN 
+    Seats ss ON ts.SeatID = ss.SeatID  -- Lấy tên ghế từ bảng Seats
+JOIN 
+    Showtime st ON bti.ShowtimeID = st.ShowtimeID  -- Kết nối với bảng Showtime
+JOIN 
+    CinemaRoom cr ON st.CinemaRoomID = cr.CinemaRoomID  -- Kết nối với bảng CinemaRoom
+JOIN 
+    Cinemas c ON cr.CinemaID = c.CinemaID  -- Kết nối với bảng Cinemas
+JOIN 
+    Movies mv ON st.MovieID = mv.MovieID -- Kết nối với bảng Movie
+	WHERE bt.BuyTicketId = @BuyTicketId 
+GROUP BY 
+    bt.BuyTicketId, 
+    bt.UserId, 
+    bt.MovieID, 
+    bti.Quantity, 
+    bti.CreateDate, 
+    bti.TotalPrice,
+    st.ShowtimeDate,  
+    st.StartTime, 
+    mv.Title,
+    mv.Price,         
+    mv.SubTitle,      
+    mv.Voiceover,
+    cr.CinemaRoomID,  -- Thêm vào GROUP BY
+    c.CinemaName;     -- Thêm vào GROUP BY
 
 END
 GO
+
