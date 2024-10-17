@@ -81,6 +81,24 @@ CREATE TABLE Movies (
 go
 
 
+CREATE TABLE Actors (
+    ActorID INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(255) NOT NULL,
+    BirthDate DATE,
+    Bio NVARCHAR(MAX)
+);
+GO
+
+CREATE TABLE MovieActors (
+    MovieID INT,
+    ActorID INT,
+    PRIMARY KEY (MovieID, ActorID),
+    CONSTRAINT FK_MovieActors_MovieID FOREIGN KEY (MovieID) REFERENCES Movies (MovieID),
+    CONSTRAINT FK_MovieActors_ActorID FOREIGN KEY (ActorID) REFERENCES Actors (ActorID)
+);
+GO
+
+
 CREATE TABLE MovieGenre (
         IdmovieGenre INT PRIMARY KEY IDENTITY(1,1),
     MovieID INT NOT NULL,
