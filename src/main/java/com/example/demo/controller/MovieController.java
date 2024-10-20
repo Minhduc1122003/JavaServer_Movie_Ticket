@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.MovieDTO;
+import com.example.demo.dto.MovieDetailDTO;
+import com.example.demo.dto.MovieRequest;
+import com.example.demo.dto.MovieViewDTO;
 import com.example.demo.entity.Movie;
 import com.example.demo.service.MovieService;
 
@@ -28,33 +29,53 @@ public class MovieController {
 	private MovieService movieService;
 	
 	
-    @GetMapping
+    @GetMapping("/getAll")
     public List<Movie> getAllMovies(){
     	return movieService.getAllMovies();
     }
     
-    @GetMapping("/DTO")
-    public List<MovieDTO> getAllMovieDTO(){
-    	return movieService.getAllMoviesDTO();
+    @GetMapping("/getAllMovieView")
+    public List<MovieViewDTO> getAllMovieView(){
+    	return movieService.getAllMoviesView();
     }
     
-    @GetMapping("/{id}")
+    @PostMapping("/findByViewMovieID")
+    public ResponseEntity<?> findByViewMovieID(@RequestBody MovieRequest movieRequest) {
+        if (movieRequest == null || movieRequest.getMovieId() == 0 || movieRequest.getUserId() == 0) {
+            return ResponseEntity.badRequest().body("Request body is missing or invalid");
+        }
+
+        MovieDetailDTO movieDetail = movieService.getMovieDetails(movieRequest.getMovieId(), movieRequest.getUserId());
+
+        if (movieDetail == null) {
+            return ResponseEntity.status(404).body("Movie not found");
+        }
+
+        return ResponseEntity.ok(movieDetail);
+    }
+    
+    @GetMapping("/getAllMovieView/{status}")
+    public List<MovieViewDTO> getMovieByStatusView(@PathVariable String status){
+    	return movieService.getMoviesByStatusView(status);
+    }
+    
+    @GetMapping("/getById/{id}")
     public ResponseEntity<Movie> getMovieById(@PathVariable Integer id) {
     	Movie movie = movieService.getMovieById(id);
     	return movie != null ? ResponseEntity.ok(movie) : ResponseEntity.notFound().build();
     }
     
-    @PostMapping
+    @PostMapping("/create")
     public Movie createMovie(@RequestBody Movie movie) {
     	return movieService.createMovie(movie);
     }
     
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public Movie updateMovie(@PathVariable Integer id, @RequestBody Movie movieDetais){
     	return movieService.updateMovie(id, movieDetais);
     }
     
-    @DeleteMapping
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Integer id){
     	movieService.deleteMovie(id);
     	return ResponseEntity.noContent().build();

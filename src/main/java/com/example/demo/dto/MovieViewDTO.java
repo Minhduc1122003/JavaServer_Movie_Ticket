@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MovieDTO {
+public class MovieViewDTO {
 	private String posterUrl;
     private String title;
     private double rating;

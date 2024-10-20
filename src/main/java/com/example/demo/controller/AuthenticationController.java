@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AuthenticationRequest;
 import com.example.demo.dto.AuthenticationResponse;
+import com.example.demo.dto.EmailRequest;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.service.CustomUserDetailsService;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.TokenBlacklistService;
 import com.example.demo.util.JwtUtil;
 
@@ -32,6 +35,9 @@ public class AuthenticationController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
@@ -45,12 +51,13 @@ public class AuthenticationController {
         if (!user.getPassword().equals(authenticationRequest.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tên đăng nhập hoặc mật khẩu.");
         }
-
+        
         // Tạo JWT token nếu xác thực thành công
         final String jwt = jwtUtil.generateToken(user);
-
+        UserDTO userDTO = new UserDTO(user.getUserName(), user.getFullName(), user.getEmail(), user.getPhoneNumber(), user.getPhoto());
+        
         // Trả về JWT token trong response
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, userDTO));
     }
     
     @PostMapping("/logout")
@@ -59,6 +66,21 @@ public class AuthenticationController {
     	
     	tokenBlacklistService.addToBlacklist(token);
     	return ResponseEntity.ok().build();
+    }
+    
+    @PostMapping("/sendmail")
+    public ResponseEntity<?> sendEmail(@RequestBody EmailRequest emailRequest){
+    	String title = emailRequest.getTitle();
+    	String content = emailRequest.getContent();
+    	String recipient = emailRequest.getRecipient();
+    	
+    	try {
+			emailService.sendEmail(recipient, title, content);
+			return ResponseEntity.ok("Send mail success !!");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return ResponseEntity.status(500).body("Send mail error: " + e.getMessage());
+		}
     }
 
     // Xử lý ngoại lệ toàn cục nếu cần

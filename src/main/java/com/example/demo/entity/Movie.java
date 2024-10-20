@@ -1,10 +1,11 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.util.Date;
+
+import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
@@ -30,20 +31,26 @@ public class Movie {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer movieID;
-    private Integer cinemaID;
+	@Column(name = "MovieID")
+	private Integer movieId;
+
     private String title;
     private String description;
     private Integer duration;
-    private Date releaseDate;
+    private LocalDate releaseDate;
     private String posterUrl;
     private String trailerUrl;
     private String age;
     private Boolean subTitle;
     private Boolean voiceover;
     private String statusMovie;
-    private Double price;
+    private double price;
     private Boolean isDelete;
+    
+    @ManyToOne
+    @JoinColumn(name = "CinemaID")
+    @JsonBackReference
+    private Cinema cinema;
     
     @ManyToMany
     @JoinTable(
@@ -57,6 +64,16 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     @JsonManagedReference
     private List<Rate> rates;
-
-
+    
+    @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
+    private List<Favourite> favourites;
+    
+    @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
+    private List<Showtime> showtimes;
+    
+    @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
+    private List<BuyTicket> buyticket;
 }
