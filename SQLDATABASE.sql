@@ -1,7 +1,8 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET;
+﻿CREATE DATABASE APP_MOVIE_TICKET2;
 go
-USE APP_MOVIE_TICKET;
+USE APP_MOVIE_TICKET2;
 GO
+
 /*
 select * from Users
 select * from Cinemas
@@ -15,6 +16,7 @@ select * from BuyTicket
 select * from ComBo
 select * from Seats
 */
+
 
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY(1,1), -- Thiết lập UserId tự động tăng
@@ -30,8 +32,6 @@ CREATE TABLE Users (
         IsDelete BIT not null, -- 0: false, 1: true;
 );
 go
-
-select * from Users where Role =1
 
 
 -- BẢNG Users CHUẨN
@@ -87,11 +87,8 @@ go
 CREATE TABLE Actors (
     ActorID INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(255) NOT NULL,
-    BirthDate DATE,
-    Bio NVARCHAR(MAX)
 );
 GO
-
 CREATE TABLE MovieActors (
     MovieID INT,
     ActorID INT,
@@ -429,7 +426,6 @@ VALUES
 (18, 1),
 (17, 6);
 go
-
 
 
 
