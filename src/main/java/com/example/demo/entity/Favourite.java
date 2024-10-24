@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,22 +16,34 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "MovieGenre")
-@NoArgsConstructor
+@Table(name = "Favourite")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class MovieGenre {
+public class Favourite {
+	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdmovieGenre")
-    private int idmovieGenre;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "IdFavourite")
+	private int idFavourite;
 	
 	@ManyToOne
 	@JoinColumn(name = "MovieID", referencedColumnName = "MovieID", nullable = false)
+	@JsonBackReference
 	private Movie movie;
-
+	
 	@ManyToOne
-    @JoinColumn(name = "IdGenre", referencedColumnName = "IdGenre", nullable = false)
-    private Genre genre;
+	@JoinColumn(name = "UserId", referencedColumnName = "UserId", nullable = false)
+	@JsonBackReference
+	private User user;
+	
+	public int getMovieId() {
+	    return movie.getMovieId(); // Assuming the Movie entity has a method getMovieId()
+	}
+
+	public int getUserId() {
+	    return user.getUserId(); // Assuming the User entity has a method getUserId()
+	}
+
 }

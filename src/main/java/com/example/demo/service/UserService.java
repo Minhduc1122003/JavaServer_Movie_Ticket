@@ -17,6 +17,10 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    
+    public List<User> getAllUsersExcept(String username){
+    	return userRepository.findAllByUserNameNot(username);
+    }
 
     public User getUserById(int userId) {
         return userRepository.findById(userId).orElse(null);

@@ -16,7 +16,7 @@ public class GenreController {
     @Autowired
     private GenreService genreService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public List<Genre> getAllGenres() {
         return genreService.getAllGenres();
     }
@@ -27,17 +27,17 @@ public class GenreController {
         return genre != null ? ResponseEntity.ok(genre) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public Genre createGenre(@RequestBody Genre genre) {
         return genreService.createGenre(genre);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public Genre updateGenre(@PathVariable int id, @RequestBody Genre genre) {
         return genreService.updateGenre(id, genre);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteGenre(@PathVariable int id) {
         genreService.deleteGenre(id);
         return ResponseEntity.noContent().build();

@@ -26,8 +26,7 @@ public class MovieGenreService {
     }
 
     public MovieGenre updateMovieGenre(Integer id, MovieGenre movieGenre) {
-        movieGenre.setMovieId(id);
-        movieGenre.setIdGenre(id);
+        movieGenre.setIdmovieGenre(id);
         return movieGenreRepository.save(movieGenre);
     }
 

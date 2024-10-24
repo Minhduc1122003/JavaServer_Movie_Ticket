@@ -146,6 +146,16 @@ CREATE TABLE Showtime (
     CONSTRAINT FK_CinemaRoomID FOREIGN KEY (CinemaRoomID) REFERENCES CinemaRoom(CinemaRoomID)
 );
 GO
+
+
+CREATE TABLE ComBo (
+    ComboID INT PRIMARY KEY IDENTITY(1,1),
+    Quantity int NOT NULL,
+    Price float NOT NULL
+);
+
+go
+
 CREATE TABLE BuyTicketInfo (
     BuyTicketInfoId INT PRIMARY KEY IDENTITY(1,1),
     BuyTicketId INT NOT NULL,
@@ -155,20 +165,12 @@ CREATE TABLE BuyTicketInfo (
     ComboID int,
 	ShowtimeID int not null,
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
-    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID)
+    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID),
+	FOREIGN KEY (ComboID) REFERENCES ComBo(ComboID)
 );
 
 go
 
-CREATE TABLE ComBo (
-    ComboID INT PRIMARY KEY IDENTITY(1,1),
-    BuyTicketInfoId INT NOT NULL,
-    Quantity int NOT NULL,
-    Price float NOT NULL,
-    FOREIGN KEY (BuyTicketInfoId) REFERENCES BuyTicketInfo(BuyTicketInfoId),
-);
-
-go
 
 
 -- tạo bảng chứa ghế
@@ -202,6 +204,7 @@ CREATE TABLE TicketSeat (
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),  -- Ràng buộc khóa ngoại với BuyTicket
     FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
 );
+go
 /*
 SELECT 
     BT.BuyTicketId,
@@ -559,7 +562,7 @@ VALUES
 ((SELECT MovieID FROM Movies WHERE Title = N'Không Nói Điều Dữ'), 6, '2024-09-29', '18:30'),
 ((SELECT MovieID FROM Movies WHERE Title = N'Quỷ Án'), 6, '2024-09-29', '20:45'),
 ((SELECT MovieID FROM Movies WHERE Title = N'Anh Trai Vượt Mọi Tam Tai'), 6, '2024-09-29', '23:00');
-
+go
 
 
 INSERT INTO SeatReservation (ShowtimeID, SeatID, Status) VALUES
@@ -568,7 +571,7 @@ INSERT INTO SeatReservation (ShowtimeID, SeatID, Status) VALUES
 (1, (SELECT TOP 1 SeatID FROM Seats WHERE ChairCode = 'C4'), 1), -- Ghế C4 đã đặt
 (1, (SELECT TOP 1 SeatID FROM Seats WHERE ChairCode = 'A2'), 0), -- Ghế A2 chưa đặt
 (1, (SELECT TOP 1 SeatID FROM Seats WHERE ChairCode = 'C2'), 0); -- Ghế C2 chưa đặt
-
+go
 
 -- Insert đánh giá cho Movie 1 (Làm Giàu Với Ma)
 INSERT INTO Rate (MovieID, UserId, Content, Rating)
@@ -601,15 +604,18 @@ go
 
 INSERT INTO BuyTicket (BuyTicketId,UserId, MovieID)
 VALUES (1,1, 1);
+go
 INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice,ShowtimeID)
 VALUES (1, 3, GETDATE(), 300.0,1);  -- Số lượng ghế là 3, giá vé là 300
+go
 INSERT INTO TicketSeat (BuyTicketId, SeatID)
 VALUES (1, 14), (1, 15), (1, 16);
+go
 INSERT INTO SeatReservation (ShowtimeID, SeatID,Status)
 VALUES (1,14,1),
  (1,15,1),
  (1,16,1);
-
+go
 
 /*
 select * from BuyTicket
@@ -769,11 +775,11 @@ VALUES
 -- Insert dữ liệu cho bảng ComBo
 INSERT INTO ComBo (BuyTicketInfoId, Quantity, Price)
 VALUES 
-(1, 1, 50.00),
-(2, 2, 100.00),
-(3, 1, 50.00),
-(4, 2, 100.00),
-(5, 3, 150.00);
+( 1, 50.00),
+( 2, 100.00),
+( 1, 50.00),
+( 2, 100.00),
+( 3, 150.00);
 
 -- Insert dữ liệu cho bảng Ticket
 INSERT INTO Ticket (BuyTicketId, Price, ChairCode, CinemaRoomID)

@@ -24,28 +24,28 @@ public class MovieGenreController {
     @Autowired
     private MovieGenreService movieGenreService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public List<MovieGenre> getAllMovieGenres() {
         return movieGenreService.getAllMovieGenres();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<MovieGenre> getMovieGenreById(@PathVariable int id) {
         MovieGenre movieGenre = movieGenreService.getMovieGenreById(id);
         return movieGenre != null ? ResponseEntity.ok(movieGenre) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public MovieGenre createMovieGenre(@RequestBody MovieGenre movieGenre) {
         return movieGenreService.createMovieGenre(movieGenre);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public MovieGenre updateMovieGenre(@PathVariable int id, @RequestBody MovieGenre movieGenre) {
         return movieGenreService.updateMovieGenre(id, movieGenre);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteMovieGenre(@PathVariable int id) {
         movieGenreService.deleteMovieGenre(id);
         return ResponseEntity.noContent().build();

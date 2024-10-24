@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-	private String userName;
-	private String fullName;
-	private String email;
-	private Integer phoneNumber;
-	private String photo;
+public class SeatResponse {
+	private int seatID;
+	private int cinemaRoomID;
+    private String chairCode;
+    private boolean defectiveChair;
+    private boolean reservationStatus;
 }

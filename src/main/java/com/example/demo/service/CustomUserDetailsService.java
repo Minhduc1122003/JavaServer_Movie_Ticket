@@ -28,6 +28,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
     
+    public UserDetails loadUserById(int userId) throws UsernameNotFoundException {
+        // Tìm người dùng theo userId
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
+
+        // Trả về đối tượng UserDetails chứa thông tin người dùng
+        return new CustomUserDetails(user);
+    }
+    
     public User findByUsername(String username) {
         return userRepository.findByUserName(username);
     }
