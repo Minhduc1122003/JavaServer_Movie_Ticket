@@ -32,6 +32,47 @@ CREATE TABLE Users (
         IsDelete BIT not null, -- 0: false, 1: true;
 );
 go
+CREATE TABLE Shifts (
+    ShiftId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi ca làm
+    ShiftName NVARCHAR(100) NOT NULL, -- Tên ca làm việc (ví dụ: Ca sáng, Ca tối)
+    StartTime TIME NOT NULL, -- Giờ bắt đầu ca (chỉ lưu thời gian)
+    EndTime TIME NOT NULL, -- Giờ kết thúc ca (chỉ lưu thời gian)
+    IsCrossDay BIT NOT NULL, -- 0: Cùng ngày, 1: Qua ngày khác
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo ca làm
+    Status NVARCHAR(20) NOT NULL -- Trạng thái của ca (e.g., "Active", "Inactive")
+);
+GO
+
+CREATE TABLE Locations (
+    LocationId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi vị trí
+    LocationName NVARCHAR(255) NOT NULL, -- Tên hoặc mô tả vị trí (ví dụ: Văn phòng Hà Nội)
+    Latitude VARCHAR(50) NOT NULL, -- Tọa độ vĩ độ
+    Longitude VARCHAR(50) NOT NULL, -- Tọa độ kinh độ
+    Radius FLOAT NOT NULL, -- Bán kính chấm công tính bằng mét
+    ShiftId INT NOT NULL, -- Liên kết đến bảng Shifts để xác định vị trí cho ca làm việc
+    CONSTRAINT FK_Locations_Shifts FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại liên kết với bảng Shifts
+);
+GO
+
+
+CREATE TABLE Attendance (
+    AttendanceId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng
+    UserId INT NOT NULL, -- Khóa ngoại liên kết đến bảng Users
+    ShiftId INT NOT NULL, -- Thông tin ca làm việc
+    CheckInTime DATETIME NOT NULL, -- Thời gian bắt đầu chấm công
+    CheckOutTime DATETIME, -- Thời gian kết thúc chấm công, có thể null khi chưa checkout
+    Latitude VARCHAR(50) NOT NULL, -- Tọa độ vĩ độ
+    Longitude VARCHAR(50) NOT NULL, -- Tọa độ kinh độ
+    Location NVARCHAR(255), -- Tên hoặc mô tả vị trí chấm công
+    IsLate BIT NOT NULL, -- 0: Đúng giờ, 1: Đi trễ
+    IsEarlyLeave BIT NOT NULL, -- 0: Không về sớm, 1: Về sớm
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo bản ghi chấm công
+    Status NVARCHAR(20) NOT NULL, -- Trạng thái chấm công (e.g., "Completed", "Pending")
+    CONSTRAINT FK_Attendance_User FOREIGN KEY (UserId) REFERENCES Users(UserId), -- Khóa ngoại đến bảng Users
+    CONSTRAINT FK_Attendance_Shift FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại đến bảng Shifts
+);
+GO
+
 
 
 -- BẢNG Users CHUẨN
