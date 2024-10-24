@@ -1,5 +1,6 @@
 ﻿CREATE DATABASE APP_MOVIE_TICKET2;
 go
+
 USE APP_MOVIE_TICKET2;
 GO
 
@@ -24,7 +25,7 @@ CREATE TABLE Users (
     Password VARCHAR(55) NOT NULL,
     Email VARCHAR(155) NOT NULL,
     FullName NVARCHAR(155) NOT NULL,
-    PhoneNumber INT NOT NULL,
+    PhoneNumber VARCHAR(20) NOT NULL,
     Photo VARCHAR(50),
     Role INT NOT NULL, -- Sử dụng TINYINT để lưu trữ nhiều giá trị, 0: khach hàng, 1: nhân viên, 2 quản lý, 3: admin
         CreateDate Datetime not null,
@@ -288,29 +289,29 @@ ORDER BY
 -- BẢNG Users 
 INSERT INTO Users (UserName, Password, Email, FullName, PhoneNumber, Photo, Role, CreateDate, Status,IsDelete)
 VALUES 
-('minhduc1122003', '123123', 'user1@example.com', N'Lê Minh Đức KH', 123456789, null, 0, GETDATE(), N'Đang hoạt động',0),
-('minhduc11220031', '123123', 'user1@example.com', N'Lê Minh Đức NV', 123456789, null, 1, GETDATE(), N'Đang hoạt động',0),
-('minhduc11220032', '123123', 'user1@example.com', N'Lê Minh Đức AD', 123456789, null, 2, GETDATE(), N'Đang hoạt động',0),
-('user1', 'password1', 'user1@example.com', N'User 1', 1234567890, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user2', 'password2', 'user2@example.com', N'User 2', 1234567891, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user3', 'password3', 'user3@example.com', N'User 3', 1234567892, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user4', 'password4', 'user4@example.com', N'User 4', 1234567893, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user5', 'password5', 'user5@example.com', N'User 5', 1234567894, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user6', 'password6', 'user6@example.com', N'User 6', 1234567895, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user7', 'password7', 'user7@example.com', N'User 7', 1234567896, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user8', 'password8', 'user8@example.com', N'User 8', 1234567897, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user9', 'password9', 'user9@example.com', N'User 9', 1234567898, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user10', 'password10', 'user10@example.com', N'User 10', 1234567899, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user11', 'password11', 'user11@example.com', N'User 11', 1234567800, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user12', 'password12', 'user12@example.com', N'User 12', 1234567801, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user13', 'password13', 'user13@example.com', N'User 13', 1234567802, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user14', 'password14', 'user14@example.com', N'User 14', 1234567803, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user15', 'password15', 'user15@example.com', N'User 15', 1234567804, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user16', 'password16', 'user16@example.com', N'User 16', 1234567805, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user17', 'password17', 'user17@example.com', N'User 17', 1234567806, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user18', 'password18', 'user18@example.com', N'User 18', 1234567807, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user19', 'password19', 'user19@example.com', N'User 19', 1234567808, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user20', 'password20', 'user20@example.com', N'User 20', 1234567809, null, 1, GETDATE(), N'Đang hoạt động', 0);
+('minhduc1122003', '123123', 'user1@example.com', N'Lê Minh Đức KH', '123456789', null, 0, GETDATE(), N'Đang hoạt động',0),
+('minhduc11220031', '123123', 'user1@example.com', N'Lê Minh Đức NV', '123456789', null, 1, GETDATE(), N'Đang hoạt động',0),
+('minhduc11220032', '123123', 'user1@example.com', N'Lê Minh Đức AD', '123456789', null, 2, GETDATE(), N'Đang hoạt động',0),
+('user1', 'password1', 'user1@example.com', N'User 1', '1234567890', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user2', 'password2', 'user2@example.com', N'User 2', '1234567891', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user3', 'password3', 'user3@example.com', N'User 3', '1234567892', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user4', 'password4', 'user4@example.com', N'User 4', '1234567893', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user5', 'password5', 'user5@example.com', N'User 5', '1234567894', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user6', 'password6', 'user6@example.com', N'User 6', '1234567895', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user7', 'password7', 'user7@example.com', N'User 7', '1234567896', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user8', 'password8', 'user8@example.com', N'User 8', '1234567897', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user9', 'password9', 'user9@example.com', N'User 9', '1234567898', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user10', 'password10', 'user10@example.com', N'User 10', '1234567899', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user11', 'password11', 'user11@example.com', N'User 11', '1234567800', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user12', 'password12', 'user12@example.com', N'User 12', '1234567801', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user13', 'password13', 'user13@example.com', N'User 13', '1234567802', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user14', 'password14', 'user14@example.com', N'User 14', '1234567803', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user15', 'password15', 'user15@example.com', N'User 15', '1234567804', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user16', 'password16', 'user16@example.com', N'User 16', '1234567805', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user17', 'password17', 'user17@example.com', N'User 17', '1234567806', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user18', 'password18', 'user18@example.com', N'User 18', '1234567807', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user19', 'password19', 'user19@example.com', N'User 19', '1234567808', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user20', 'password20', 'user20@example.com', N'User 20', '1234567809', null, 1, GETDATE(), N'Đang hoạt động', 0);
 go
 
 
