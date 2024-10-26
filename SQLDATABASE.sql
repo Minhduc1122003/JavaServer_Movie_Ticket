@@ -22,7 +22,7 @@ select * from Seats
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY(1,1), -- Thiết lập UserId tự động tăng
     UserName VARCHAR(50) NOT NULL,
-    Password VARCHAR(55) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
     Email VARCHAR(155) NOT NULL,
     FullName NVARCHAR(155) NOT NULL,
     PhoneNumber VARCHAR(20) NOT NULL,
