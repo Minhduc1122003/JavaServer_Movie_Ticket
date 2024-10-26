@@ -43,7 +43,6 @@ CREATE TABLE Shifts (
     Status NVARCHAR(20) NOT NULL -- Trạng thái của ca (e.g., "Active", "Inactive")
 );
 GO
-
 CREATE TABLE Locations (
     LocationId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi vị trí
     LocationName NVARCHAR(255) NOT NULL, -- Tên hoặc mô tả vị trí (ví dụ: Văn phòng Hà Nội)
@@ -54,7 +53,6 @@ CREATE TABLE Locations (
     CONSTRAINT FK_Locations_Shifts FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại liên kết với bảng Shifts
 );
 GO
-
 
 CREATE TABLE Attendance (
     AttendanceId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng
@@ -73,8 +71,18 @@ CREATE TABLE Attendance (
     CONSTRAINT FK_Attendance_Shift FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại đến bảng Shifts
 );
 GO
-
-
+CREATE TABLE WorkSchedules (
+    ScheduleId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi lịch làm việc
+    UserId INT NOT NULL, -- ID của nhân viên
+    ShiftId INT NOT NULL, -- ID của ca làm
+    StartDate DATE NOT NULL, -- Ngày bắt đầu
+    EndDate DATE NOT NULL, -- Ngày kết thúc
+    DaysOfWeek NVARCHAR(70) NOT NULL, -- Các ngày trong tuần (ví dụ: 'Mon,Wed,Thu')
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo lịch làm việc
+    FOREIGN KEY (UserId) REFERENCES Users(UserId), -- Khóa ngoại liên kết với bảng Users
+    FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại liên kết với bảng Shifts
+);
+GO
 
 -- BẢNG Users CHUẨN
 
