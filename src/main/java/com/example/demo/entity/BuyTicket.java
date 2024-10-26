@@ -30,19 +30,19 @@ public class BuyTicket {
 
     @ManyToOne
     @JoinColumn(name = "UserId", referencedColumnName = "userId")
-    @JsonBackReference
+    @JsonBackReference(value = "user-buyticket")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "MovieID", referencedColumnName = "movieID")
-    @JsonBackReference
+    @JsonBackReference(value = "movie-buyticket")
     private Movie movie;
     
     @OneToMany(mappedBy = "buyticket")
-    @JsonManagedReference
+    @JsonManagedReference(value = "buyticket-buyticketInfo")
     private List<BuyTicketInfo> buyTicketInfo;
     
     @OneToMany(mappedBy = "buyticket")
-    @JsonManagedReference
+    @JsonManagedReference(value = "buyticket-ticketseat")
     private List<TicketSeat> ticketSeats;
 }

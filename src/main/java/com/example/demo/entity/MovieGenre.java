@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,13 +25,15 @@ public class MovieGenre {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IdmovieGenre")
-    private int idmovieGenre;
+    private Integer idmovieGenre;
 	
 	@ManyToOne
-	@JoinColumn(name = "MovieID", referencedColumnName = "MovieID", nullable = false)
-	private Movie movie;
+    @JoinColumn(name = "MovieID", referencedColumnName = "MovieID", nullable = false)
+    @JsonBackReference(value = "movie-moviegenre")
+    private Movie movie;
 
-	@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "IdGenre", referencedColumnName = "IdGenre", nullable = false)
+    @JsonBackReference(value = "genre-moviegenre")
     private Genre genre;
 }

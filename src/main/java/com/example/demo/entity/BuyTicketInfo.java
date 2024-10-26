@@ -40,16 +40,16 @@ public class BuyTicketInfo {
     
     @ManyToOne
     @JoinColumn(name = "BuyTicketId", referencedColumnName = "BuyTicketId")
-    @JsonBackReference
+    @JsonBackReference(value = "buyticket-buyticketInfo")
     private BuyTicket buyticket;
     
     @ManyToOne
     @JoinColumn(name = "ComboID", referencedColumnName = "ComboID")
-    @JsonBackReference
+    @JsonBackReference(value = "combo-buyticketInfo")
     private Combo combo;
     
     @ManyToOne
     @JoinColumn(name = "ShowtimeID", referencedColumnName = "ShowtimeID")
-    @JsonBackReference
+    @JsonBackReference(value = "showtime-buyticketInfo")
     private Showtime showtime;
 }

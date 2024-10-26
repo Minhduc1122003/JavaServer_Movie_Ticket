@@ -35,15 +35,15 @@ public class Seat {
 	private boolean defectiveChair;
 	
 	@OneToMany(mappedBy = "seat")
-	@JsonManagedReference
+	@JsonManagedReference(value = "seat-ticketseat")
 	private List<TicketSeat> ticketseats;
 	
 	@OneToMany(mappedBy = "seat")
-	@JsonManagedReference
+	@JsonManagedReference(value = "seat-seatreservation")
 	private List<SeatReservation> seatReservation;
 	
 	@ManyToOne
 	@JoinColumn(name = "CinemaRoomID", referencedColumnName = "CinemaRoomID", nullable = false)
-	@JsonBackReference
+	@JsonBackReference(value = "cinemaRoom-seat")
 	private CinemaRoom cinemaRoom;
 }

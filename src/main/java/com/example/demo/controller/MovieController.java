@@ -54,9 +54,15 @@ public class MovieController {
         return ResponseEntity.ok(movieDetail);
     }
     
-    @GetMapping("/getAllMovieView/{status}")
-    public List<MovieViewDTO> getMovieByStatusView(@PathVariable String status){
-    	return movieService.getMoviesByStatusView(status);
+    @GetMapping("/getAllMovieView/{statusMovie}")
+    public List<MovieViewDTO> getMovieByStatusView(@PathVariable String statusMovie){
+    	return movieService.getMoviesByStatusView(statusMovie);
+    }
+    
+    @GetMapping("/getMovieDetail")
+    public ResponseEntity<?> getMovieDetail(@RequestBody int movieId, @RequestBody int userId){
+    	MovieDetailDTO dto = movieService.getMovieDetails(movieId, userId);
+    	return ResponseEntity.ok(dto);
     }
     
     @GetMapping("/getById/{id}")

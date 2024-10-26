@@ -22,7 +22,7 @@ public class TicketController {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-	@PostMapping("/buy")
+	@PostMapping("/createBuyTicket")
 	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest){
 		try {
 			// Lấy dữ liệu từ RequestBody

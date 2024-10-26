@@ -29,11 +29,11 @@ public class SeatReservation {
 	
 	@ManyToOne
 	@JoinColumn(name = "ShowtimeID", referencedColumnName = "ShowtimeID")
-	@JsonBackReference
+	@JsonBackReference(value = "showtime-seatreservation")
 	private Showtime showtime;
 	
 	@ManyToOne
 	@JoinColumn(name = "SeatID", referencedColumnName = "SeatID")
-	@JsonBackReference
+	@JsonBackReference(value = "seat-seatreservation")
 	private Seat seat;
 }

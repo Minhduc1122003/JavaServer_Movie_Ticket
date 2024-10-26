@@ -73,20 +73,20 @@ public class Showtime {
 	private LocalTime startTime;
 	
 	@OneToMany(mappedBy = "showtime")
-	@JsonManagedReference
+	@JsonManagedReference(value = "showtime-buyticketInfo")
 	private List<BuyTicketInfo> buyTicketInfo;
 	
 	@OneToMany(mappedBy = "showtime")
-	@JsonManagedReference
+	@JsonManagedReference(value = "showtime-seatreservation")
 	private List<SeatReservation> seatReservation;
 	
 	@ManyToOne
 	@JoinColumn(name = "MovieID", referencedColumnName = "MovieID", nullable = false)
-	@JsonBackReference
+	@JsonBackReference(value = "movie-showtime")
 	private Movie movie;
 	
 	@ManyToOne
 	@JoinColumn(name = "CinemaRoomID", referencedColumnName = "CinemaRoomID", nullable = false)
-	@JsonBackReference
+	@JsonBackReference(value = "cinemaRoom-showtime")
 	private CinemaRoom cinemaRoom;
 }
