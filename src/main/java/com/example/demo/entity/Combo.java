@@ -32,6 +32,6 @@ public class Combo {
 	private double price;
 	
 	@OneToMany(mappedBy = "combo")
-	@JsonManagedReference
+	@JsonManagedReference(value = "combo-buyticketInfo")
 	private List<BuyTicketInfo> buyTicketInfo;
 }

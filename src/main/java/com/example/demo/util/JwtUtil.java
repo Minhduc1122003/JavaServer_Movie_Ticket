@@ -26,7 +26,6 @@ public class JwtUtil {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userName", user.getUserName());
         
         // Chuyển đổi vai trò từ int sang chuỗi
         String role = switch (user.getRole()) {

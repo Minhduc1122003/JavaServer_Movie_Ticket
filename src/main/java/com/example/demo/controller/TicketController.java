@@ -43,6 +43,9 @@ public class TicketController {
 
 	@PostMapping("/buy")
 	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest) {
+
+	@PostMapping("/createBuyTicket")
+	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest) {
 		try {
 			// Lấy dữ liệu từ RequestBody
 			int buyTicketId = buyTicketRequest.getBuyTicketId();

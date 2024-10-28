@@ -2,7 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -12,8 +12,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,7 +35,7 @@ public class Movie {
     private String title;
     private String description;
     private Integer duration;
-    private LocalDate releaseDate;
+    private Date releaseDate;
     private String posterUrl;
     private String trailerUrl;
     private String age;
@@ -49,31 +47,26 @@ public class Movie {
     
     @ManyToOne
     @JoinColumn(name = "CinemaID")
-    @JsonBackReference
+    @JsonBackReference(value = "cinema-movie")
     private Cinema cinema;
     
-    @ManyToMany
-    @JoinTable(
-        name = "MovieGenre",
-        joinColumns = @JoinColumn(name = "MovieID"),
-        inverseJoinColumns = @JoinColumn(name = "IdGenre")
-    )
-    @JsonManagedReference
-    private List<Genre> genres;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "movie-moviegenre")
+    private List<MovieGenre> movieGenres;
 
     @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
+    @JsonManagedReference(value = "movie-rate")
     private List<Rate> rates;
     
     @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
+    @JsonManagedReference(value = "movie-favourite")
     private List<Favourite> favourites;
     
     @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
+    @JsonManagedReference(value = "movie-showtime")
     private List<Showtime> showtimes;
     
     @OneToMany(mappedBy = "movie")
-    @JsonManagedReference
+    @JsonManagedReference(value = "movie-buyticket")
     private List<BuyTicket> buyticket;
 }

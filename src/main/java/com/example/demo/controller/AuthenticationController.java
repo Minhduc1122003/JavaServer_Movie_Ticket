@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,9 @@ public class AuthenticationController {
     private CustomUserDetailsService customUserDetailsService;
     
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
     private TokenBlacklistService tokenBlacklistService;
 
     @Autowired
@@ -44,17 +48,17 @@ public class AuthenticationController {
         // Tìm kiếm người dùng trong cơ sở dữ liệu
         User user = customUserDetailsService.findByUsername(authenticationRequest.getUsername());
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tên đăng nhập hoặc mật khẩu.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tên đăng nhập !");
         }
         
         // So sánh mật khẩu
-        if (!user.getPassword().equals(authenticationRequest.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai tên đăng nhập hoặc mật khẩu.");
+        if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai mật khẩu !");
         }
         
         // Tạo JWT token nếu xác thực thành công
         final String jwt = jwtUtil.generateToken(user);
-        UserDTO userDTO = new UserDTO(user.getUserName(), user.getFullName(), user.getEmail(), user.getPhoneNumber(), user.getPhoto());
+        UserDTO userDTO = new UserDTO(user.getUserId(), user.getUserName(), user.getFullName(), user.getEmail(), user.getPhoneNumber(), user.getPhoto());
         
         // Trả về JWT token trong response
         return ResponseEntity.ok(new AuthenticationResponse(jwt, userDTO));

@@ -30,12 +30,12 @@ public class Favourite {
 	
 	@ManyToOne
 	@JoinColumn(name = "MovieID", referencedColumnName = "MovieID", nullable = false)
-	@JsonBackReference
+	@JsonBackReference(value = "movie-favourite")
 	private Movie movie;
 	
 	@ManyToOne
 	@JoinColumn(name = "UserId", referencedColumnName = "UserId", nullable = false)
-	@JsonBackReference
+	@JsonBackReference(value = "user-favourite")
 	private User user;
 	
 	public int getMovieId() {

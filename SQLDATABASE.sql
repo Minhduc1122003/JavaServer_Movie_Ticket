@@ -1,7 +1,9 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET;
+﻿CREATE DATABASE APP_MOVIE_TICKET2;
 go
-USE APP_MOVIE_TICKET;
+
+USE APP_MOVIE_TICKET2;
 GO
+
 /*
 select * from Users
 select * from Cinemas
@@ -16,13 +18,14 @@ select * from ComBo
 select * from Seats
 */
 
+
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY(1,1), -- Thiết lập UserId tự động tăng
     UserName VARCHAR(50) NOT NULL,
-    Password VARCHAR(55) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
     Email VARCHAR(155) NOT NULL,
     FullName NVARCHAR(155) NOT NULL,
-    PhoneNumber INT NOT NULL,
+    PhoneNumber VARCHAR(20) NOT NULL,
     Photo VARCHAR(50),
     Role INT NOT NULL, -- Sử dụng TINYINT để lưu trữ nhiều giá trị, 0: khach hàng, 1: nhân viên, 2 quản lý, 3: admin
         CreateDate Datetime not null,
@@ -30,7 +33,56 @@ CREATE TABLE Users (
         IsDelete BIT not null, -- 0: false, 1: true;
 );
 go
+CREATE TABLE Shifts (
+    ShiftId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi ca làm
+    ShiftName NVARCHAR(100) NOT NULL, -- Tên ca làm việc (ví dụ: Ca sáng, Ca tối)
+    StartTime TIME NOT NULL, -- Giờ bắt đầu ca (chỉ lưu thời gian)
+    EndTime TIME NOT NULL, -- Giờ kết thúc ca (chỉ lưu thời gian)
+    IsCrossDay BIT NOT NULL, -- 0: Cùng ngày, 1: Qua ngày khác
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo ca làm
+    Status NVARCHAR(20) NOT NULL -- Trạng thái của ca (e.g., "Active", "Inactive")
+);
+GO
+CREATE TABLE Locations (
+    LocationId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi vị trí
+    LocationName NVARCHAR(255) NOT NULL, -- Tên hoặc mô tả vị trí (ví dụ: Văn phòng Hà Nội)
+    Latitude VARCHAR(50) NOT NULL, -- Tọa độ vĩ độ
+    Longitude VARCHAR(50) NOT NULL, -- Tọa độ kinh độ
+    Radius FLOAT NOT NULL, -- Bán kính chấm công tính bằng mét
+    ShiftId INT NOT NULL, -- Liên kết đến bảng Shifts để xác định vị trí cho ca làm việc
+    CONSTRAINT FK_Locations_Shifts FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại liên kết với bảng Shifts
+);
+GO
 
+CREATE TABLE Attendance (
+    AttendanceId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng
+    UserId INT NOT NULL, -- Khóa ngoại liên kết đến bảng Users
+    ShiftId INT NOT NULL, -- Thông tin ca làm việc
+    CheckInTime DATETIME NOT NULL, -- Thời gian bắt đầu chấm công
+    CheckOutTime DATETIME, -- Thời gian kết thúc chấm công, có thể null khi chưa checkout
+    Latitude VARCHAR(50) NOT NULL, -- Tọa độ vĩ độ
+    Longitude VARCHAR(50) NOT NULL, -- Tọa độ kinh độ
+    Location NVARCHAR(255), -- Tên hoặc mô tả vị trí chấm công
+    IsLate BIT NOT NULL, -- 0: Đúng giờ, 1: Đi trễ
+    IsEarlyLeave BIT NOT NULL, -- 0: Không về sớm, 1: Về sớm
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo bản ghi chấm công
+    Status NVARCHAR(20) NOT NULL, -- Trạng thái chấm công (e.g., "Completed", "Pending")
+    CONSTRAINT FK_Attendance_User FOREIGN KEY (UserId) REFERENCES Users(UserId), -- Khóa ngoại đến bảng Users
+    CONSTRAINT FK_Attendance_Shift FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại đến bảng Shifts
+);
+GO
+CREATE TABLE WorkSchedules (
+    ScheduleId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi lịch làm việc
+    UserId INT NOT NULL, -- ID của nhân viên
+    ShiftId INT NOT NULL, -- ID của ca làm
+    StartDate DATE NOT NULL, -- Ngày bắt đầu
+    EndDate DATE NOT NULL, -- Ngày kết thúc
+    DaysOfWeek NVARCHAR(70) NOT NULL, -- Các ngày trong tuần (ví dụ: 'Mon,Wed,Thu')
+    CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo lịch làm việc
+    FOREIGN KEY (UserId) REFERENCES Users(UserId), -- Khóa ngoại liên kết với bảng Users
+    FOREIGN KEY (ShiftId) REFERENCES Shifts(ShiftId) -- Khóa ngoại liên kết với bảng Shifts
+);
+GO
 
 -- BẢNG Users CHUẨN
 
@@ -85,11 +137,8 @@ go
 CREATE TABLE Actors (
     ActorID INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(255) NOT NULL,
-    BirthDate DATE,
-    Bio NVARCHAR(MAX)
 );
 GO
-
 CREATE TABLE MovieActors (
     MovieID INT,
     ActorID INT,
@@ -248,29 +297,29 @@ ORDER BY
 -- BẢNG Users 
 INSERT INTO Users (UserName, Password, Email, FullName, PhoneNumber, Photo, Role, CreateDate, Status,IsDelete)
 VALUES 
-('minhduc1122003', '123123', 'user1@example.com', N'Lê Minh Đức KH', 123456789, null, 0, GETDATE(), N'Đang hoạt động',0),
-('minhduc11220031', '123123', 'user1@example.com', N'Lê Minh Đức NV', 123456789, null, 1, GETDATE(), N'Đang hoạt động',0),
-('minhduc11220032', '123123', 'user1@example.com', N'Lê Minh Đức AD', 123456789, null, 2, GETDATE(), N'Đang hoạt động',0),
-('user1', 'password1', 'user1@example.com', N'User 1', 1234567890, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user2', 'password2', 'user2@example.com', N'User 2', 1234567891, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user3', 'password3', 'user3@example.com', N'User 3', 1234567892, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user4', 'password4', 'user4@example.com', N'User 4', 1234567893, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user5', 'password5', 'user5@example.com', N'User 5', 1234567894, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user6', 'password6', 'user6@example.com', N'User 6', 1234567895, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user7', 'password7', 'user7@example.com', N'User 7', 1234567896, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user8', 'password8', 'user8@example.com', N'User 8', 1234567897, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user9', 'password9', 'user9@example.com', N'User 9', 1234567898, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user10', 'password10', 'user10@example.com', N'User 10', 1234567899, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user11', 'password11', 'user11@example.com', N'User 11', 1234567800, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user12', 'password12', 'user12@example.com', N'User 12', 1234567801, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user13', 'password13', 'user13@example.com', N'User 13', 1234567802, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user14', 'password14', 'user14@example.com', N'User 14', 1234567803, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user15', 'password15', 'user15@example.com', N'User 15', 1234567804, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user16', 'password16', 'user16@example.com', N'User 16', 1234567805, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user17', 'password17', 'user17@example.com', N'User 17', 1234567806, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user18', 'password18', 'user18@example.com', N'User 18', 1234567807, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user19', 'password19', 'user19@example.com', N'User 19', 1234567808, null, 1, GETDATE(), N'Đang hoạt động', 0),
-('user20', 'password20', 'user20@example.com', N'User 20', 1234567809, null, 1, GETDATE(), N'Đang hoạt động', 0);
+('minhduc1122003', '123123', 'user1@example.com', N'Lê Minh Đức KH', '123456789', null, 0, GETDATE(), N'Đang hoạt động',0),
+('minhduc11220031', '123123', 'user1@example.com', N'Lê Minh Đức NV', '123456789', null, 1, GETDATE(), N'Đang hoạt động',0),
+('minhduc11220032', '123123', 'user1@example.com', N'Lê Minh Đức AD', '123456789', null, 2, GETDATE(), N'Đang hoạt động',0),
+('user1', 'password1', 'user1@example.com', N'User 1', '1234567890', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user2', 'password2', 'user2@example.com', N'User 2', '1234567891', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user3', 'password3', 'user3@example.com', N'User 3', '1234567892', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user4', 'password4', 'user4@example.com', N'User 4', '1234567893', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user5', 'password5', 'user5@example.com', N'User 5', '1234567894', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user6', 'password6', 'user6@example.com', N'User 6', '1234567895', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user7', 'password7', 'user7@example.com', N'User 7', '1234567896', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user8', 'password8', 'user8@example.com', N'User 8', '1234567897', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user9', 'password9', 'user9@example.com', N'User 9', '1234567898', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user10', 'password10', 'user10@example.com', N'User 10', '1234567899', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user11', 'password11', 'user11@example.com', N'User 11', '1234567800', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user12', 'password12', 'user12@example.com', N'User 12', '1234567801', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user13', 'password13', 'user13@example.com', N'User 13', '1234567802', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user14', 'password14', 'user14@example.com', N'User 14', '1234567803', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user15', 'password15', 'user15@example.com', N'User 15', '1234567804', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user16', 'password16', 'user16@example.com', N'User 16', '1234567805', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user17', 'password17', 'user17@example.com', N'User 17', '1234567806', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user18', 'password18', 'user18@example.com', N'User 18', '1234567807', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user19', 'password19', 'user19@example.com', N'User 19', '1234567808', null, 1, GETDATE(), N'Đang hoạt động', 0),
+('user20', 'password20', 'user20@example.com', N'User 20', '1234567809', null, 1, GETDATE(), N'Đang hoạt động', 0);
 go
 
 
@@ -430,7 +479,6 @@ VALUES
 (18, 1),
 (17, 6);
 go
-
 
 
 

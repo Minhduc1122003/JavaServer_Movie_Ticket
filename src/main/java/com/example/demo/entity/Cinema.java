@@ -27,10 +27,10 @@ public class Cinema {
 	private String address;
 	
 	@OneToMany(mappedBy = "cinema")
-	@JsonManagedReference
+	@JsonManagedReference(value = "cinema-movie")
 	private List<Movie> moives;
 	
 	@OneToMany(mappedBy = "cinema")
-	@JsonManagedReference
-	private List<CinemaRoom> cinemaroom;
+	@JsonManagedReference(value = "cinema-cinemaRoom")
+	private List<CinemaRoom> cinemaRoom;
 }

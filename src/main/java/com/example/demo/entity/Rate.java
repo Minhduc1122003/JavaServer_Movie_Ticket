@@ -30,11 +30,11 @@ public class Rate {
     
     @ManyToOne
     @JoinColumn(name = "MovieID", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "movie-rate")
     private Movie movie;
 
     @ManyToOne
     @JoinColumn(name = "UserId", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "user-rate")
     private User user;
 }

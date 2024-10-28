@@ -11,7 +11,10 @@ import com.example.demo.dto.MovieDetailDTO;
 import com.example.demo.dto.MovieViewDTO;
 import com.example.demo.entity.Genre;
 import com.example.demo.entity.Movie;
+import com.example.demo.entity.MovieGenre;
 import com.example.demo.entity.Rate;
+import com.example.demo.repository.GenreRepository;
+import com.example.demo.repository.MovieGenreRepository;
 import com.example.demo.repository.MovieRepository;
 
 import jakarta.persistence.Tuple;
@@ -21,7 +24,9 @@ public class MovieService {
 	
 	@Autowired
 	private MovieRepository movieRepository;
-
+	
+	@Autowired
+	private MovieGenreRepository movieGenreRepository;
 	
 	public List<Movie> getAllMovies(){
 		return movieRepository.findAll();
@@ -32,6 +37,8 @@ public class MovieService {
         List<MovieViewDTO> movieDTOs = new ArrayList<>();
 
         for(Movie movie : movies){
+        	int movieId = movie.getMovieId();
+        	
             MovieViewDTO dto = new MovieViewDTO();
             dto.setPosterUrl(movie.getPosterUrl());
             dto.setTitle(movie.getTitle());
@@ -46,7 +53,12 @@ public class MovieService {
             dto.setRating(averageRating);
 
             // Lấy tên thể loại
-            List<Genre> genres = movie.getGenres();
+            List<MovieGenre> movieGenres = movieGenreRepository.findByMovieId(movieId);
+            List<Genre> genres = new ArrayList<Genre>();
+            for(MovieGenre genre : movieGenres) {
+            	genres.add(genre.getGenre());
+            }
+            
             List<String> genreNames = new ArrayList<>();
             if(genres != null){
                 for(Genre genre : genres){
@@ -67,6 +79,7 @@ public class MovieService {
 
         for(Movie movie : movies){
         	if(movie != null && statusMovie.equals(movie.getStatusMovie())) {
+        		Integer movieId = movie.getMovieId();
         		MovieViewDTO dto = new MovieViewDTO();
                 dto.setPosterUrl(movie.getPosterUrl());
                 dto.setTitle(movie.getTitle());
@@ -80,8 +93,13 @@ public class MovieService {
                 }
                 dto.setRating(averageRating);
 
-                // Lấy tên thể loại
-                List<Genre> genres = movie.getGenres();
+             // Lấy tên thể loại
+                List<MovieGenre> movieGenres = movieGenreRepository.findByMovieId(movieId);
+                List<Genre> genres = new ArrayList<Genre>();
+                for(MovieGenre genre : movieGenres) {
+                	genres.add(genre.getGenre());
+                }
+                
                 List<String> genreNames = new ArrayList<>();
                 if(genres != null){
                     for(Genre genre : genres){

@@ -25,13 +25,13 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private Integer userId;
 
     private String userName;
     private String password;
     private String email;
     private String fullName;
-    private int phoneNumber;
+    private String phoneNumber;
     private String photo = null;
     private int role = 0;
     private LocalDateTime createDate = LocalDateTime.now();
@@ -39,14 +39,14 @@ public class User {
     private boolean isDelete = false;
     
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-rate")
     private List<Rate> rates;
     
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-favourite")
     private List<Favourite> favourite;
     
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-buyticket")
     private List<BuyTicket> buyticket;
 }
