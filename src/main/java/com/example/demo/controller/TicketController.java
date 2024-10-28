@@ -41,9 +41,6 @@ public class TicketController {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@PostMapping("/buy")
-	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest) {
-
 	@PostMapping("/createBuyTicket")
 	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest) {
 		try {
