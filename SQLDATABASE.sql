@@ -1,8 +1,9 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET2;
+﻿CREATE DATABASE APP_MOVIE_TICKET3;
 go
 
-USE APP_MOVIE_TICKET2;
+USE APP_MOVIE_TICKET3;
 GO
+
 
 /*
 select * from Users
@@ -200,7 +201,12 @@ GO
 
 CREATE TABLE ComBo (
     ComboID INT PRIMARY KEY IDENTITY(1,1),
+	Title NVARCHAR(50) NOT NULL,
+	Subtitle NVARCHAR(50) NOT NULL,
+	Image VARCHAR(50) NOT NULL,
     Quantity int NOT NULL,
+	Status BIT NOT NULL,
+	IsCombo BIT NOT NULL,
     Price float NOT NULL
 );
 
@@ -648,6 +654,31 @@ VALUES
 (8, 2, N'Cốt truyện hấp dẫn, diễn xuất tốt.', 6),
 (8, 3, N'Tạm ổn, còn nhiều điểm thiếu sót.', 2);
 go
+
+INSERT INTO ComBo (Title, Subtitle, Image, Quantity, Status, IsCombo, Price)
+VALUES 
+('Combo 1', 'Subtitle 1', 'image1.jpg', 1, 1, 1, 150000),
+('Combo 2', 'Subtitle 2', 'image2.jpg', 2, 1, 1, 55000),
+('Combo 1', 'Subtitle 3', 'image3.jpg', 1, 0, 1, 65000),
+('Combo 2', 'Subtitle 4', 'image4.jpg', 2, 1, 0, 10000),
+('Combo 3', 'Subtitle 5', 'image5.jpg', 3, 0, 1, 15000);
+
+
+
+  SELECT 
+          ComboID,
+          Title,
+          Subtitle,
+          Image,
+          Quantity,
+          Status,
+          IsCombo,
+          Price
+        FROM ComBo
+		WHERE IsCombo = 0
+
+
+
 
 
 
