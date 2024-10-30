@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/users")
@@ -48,12 +49,11 @@ public class UserController {
     
     @PostMapping("/create")
     public User createUser(@RequestBody User user) {
-    	
         return userService.createUser(user);
     }
 
     @PutMapping("/update/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody User user) {
+    public User updateUser(@PathVariable Integer id, @RequestBody User user) {
         return userService.updateUser(id, user);
     }
     
