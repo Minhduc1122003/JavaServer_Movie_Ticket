@@ -1,16 +1,8 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +12,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.config.PaymentVNPAYConfig;
 import com.example.demo.dto.BuyTicketRequest;
-import com.example.demo.mservice.config.Environment;
-import com.example.demo.mservice.enums.RequestType;
-import com.example.demo.mservice.models.PaymentResponse;
-import com.example.demo.mservice.processor.CreateOrderMoMo;
-import com.example.demo.mservice.shared.utils.LogUtils;
+import com.example.demo.service.PaymentService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +28,8 @@ public class TicketController {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private PaymentService paymentService;
 
 	@PostMapping("/createBuyTicket")
 	public ResponseEntity<?> insertBuyTicket(@RequestBody BuyTicketRequest buyTicketRequest) {
@@ -69,104 +59,33 @@ public class TicketController {
 		}
 	}
 
+	/* Pay with MOMO */
 	@GetMapping("/momo")
-	public ResponseEntity<Map<String, String>> createMoMoOrder() {
-		LogUtils.init();
-		String requestId = String.valueOf(System.currentTimeMillis());
-		String orderId = String.valueOf(System.currentTimeMillis());
-		long amount = 10000000;
-		String orderInfo = "Pay With MoMo";
-		String returnURL = "http://localhost:9011/";
-		String notifyURL = "https://google.com.vn";
-
-		Environment environment = Environment.selectEnv("dev");
-		PaymentResponse captureWalletMoMoResponse = null;
+	public ResponseEntity<Map<String, String>> createMoMoOrder(@RequestParam long amount, @RequestParam String id) {
 		try {
-			captureWalletMoMoResponse = CreateOrderMoMo.process(environment, orderId, requestId,
-					Long.toString(amount), orderInfo, returnURL, notifyURL, "", RequestType.PAY_WITH_ATM, null);
+			Map<String, String> response = paymentService.paymentWithMomo(amount, id);
+			log.info("Payment with MoMo Successful!!!");
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			log.error("Error while processing MoMo payment", e);
+			log.error("Payment with Momo fail : {}", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 
-		Map<String, String> response = new HashMap<>();
-		if (captureWalletMoMoResponse != null && captureWalletMoMoResponse.getPayUrl() != null) {
-			log.info("Pay URL: " + captureWalletMoMoResponse.getPayUrl());
-			response.put("status", "OK");
-			response.put("message", "Successfully");
-			response.put("paymentUrl", captureWalletMoMoResponse.getPayUrl());
-		} else {
-			response.put("status", "FAILED");
-			response.put("message", "Failed to create MoMo order");
-		}
-
-		return ResponseEntity.ok(response);
 	}
 
 	/* Pay with VNPAY */
 	@GetMapping("/vnpay")
-	public ResponseEntity<Map<String, String>> createVnpayOrder()
+	public ResponseEntity<Map<String, String>> createVnpayOrder(@RequestParam long amount, @RequestParam String id)
 			throws UnsupportedEncodingException {
-		String vnp_Version = "2.1.0";
-		String vnp_Command = "pay";
-		String orderType = "other";
-		long amount = 100000000 * 100;
-		String bankCode = "NCB";
-
-		String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8);
-		String vnp_IpAddr = "127.0.0.1";
-
-		String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
-
-		Map<String, String> vnp_Params = new HashMap<>();
-		vnp_Params.put("vnp_Version", vnp_Version);
-		vnp_Params.put("vnp_Command", vnp_Command);
-		vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-		vnp_Params.put("vnp_Amount", String.valueOf(amount));
-		vnp_Params.put("vnp_CurrCode", "VND");
-		vnp_Params.put("vnp_Locale", "vn");
-		vnp_Params.put("vnp_BankCode", bankCode);
-		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-		vnp_Params.put("vnp_OrderType", orderType);
-		vnp_Params.put("vnp_ReturnUrl", PaymentVNPAYConfig.vnp_ReturnUrl);
-		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-
-		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		String vnp_CreateDate = formatter.format(cld.getTime());
-		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-		cld.add(Calendar.MINUTE, 15);
-		String vnp_ExpireDate = formatter.format(cld.getTime());
-		vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-
-		List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-		Collections.sort(fieldNames);
-		StringBuilder hashData = new StringBuilder();
-		StringBuilder query = new StringBuilder();
-		for (String fieldName : fieldNames) {
-			String fieldValue = vnp_Params.get(fieldName);
-			if (fieldValue != null && fieldValue.length() > 0) {
-				hashData.append(fieldName).append('=')
-						.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-				query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()))
-						.append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-				if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
-					query.append('&');
-					hashData.append('&');
-				}
-			}
+		try {
+			long vnpayAmount = amount * 100;
+			Map<String, String> response = paymentService.paymentWithVnPay(vnpayAmount, id);
+			log.info("Payment with VNPay Successful!!!");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			log.error("Payment with VNpay fail : {}", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-		String queryUrl = query.toString();
-		String vnp_SecureHash = PaymentVNPAYConfig.hmacSHA512(PaymentVNPAYConfig.secretKey, hashData.toString());
-		queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-		String paymentUrl = PaymentVNPAYConfig.vnp_PayUrl + "?" + queryUrl;
-
-		Map<String, String> response = new HashMap<>();
-		response.put("status", "OK");
-		response.put("message", "Successfully");
-		response.put("paymentUrl", paymentUrl);
-		return ResponseEntity.ok(response);
 	}
 
 }
