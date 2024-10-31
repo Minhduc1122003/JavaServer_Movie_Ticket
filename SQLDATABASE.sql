@@ -1,9 +1,8 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET3;
+﻿CREATE DATABASE APP_MOVIE_TICKET2;
 go
 
-USE APP_MOVIE_TICKET3;
+USE APP_MOVIE_TICKET2;
 GO
-
 
 /*
 select * from Users
@@ -140,10 +139,11 @@ CREATE TABLE Actors (
     Name NVARCHAR(255) NOT NULL,
 );
 GO
+
 CREATE TABLE MovieActors (
-    MovieID INT,
-    ActorID INT,
-    PRIMARY KEY (MovieID, ActorID),
+    MovieActorsID INT PRIMARY KEY IDENTITY(1,1),  -- Cần thêm định nghĩa cho MovieActorsID
+    MovieID INT NOT NULL,
+    ActorID INT NOT NULL,
     CONSTRAINT FK_MovieActors_MovieID FOREIGN KEY (MovieID) REFERENCES Movies (MovieID),
     CONSTRAINT FK_MovieActors_ActorID FOREIGN KEY (ActorID) REFERENCES Actors (ActorID)
 );
@@ -437,6 +437,25 @@ VALUES
 (1, N'Joker: Folie À Deux', N'Không ngoa khi nói rằng, Joker là nhâ đến mànmang đến cho khán giả một Joker cực kì khác biệt, chưa từng có trong lịch sử. Phim thành công nhận 11 đề cử Oscar và thắng 2 giải, trong đó có Nam chính xuất sắc nhất cho Joaquin Phoenix. Lần này, Joker 2 trở lại, mang đến cho khán giả bộ đôi diễn viên trong mơ – Joaquin Phoenix tiếp tục trở thành Arthur Fleck còn vai diễn Harley Quinn thuộc về Lady Gaga. Chưa tham gia nhiều phim, nữ ca sĩ huyền thoại vẫn nhận được sự tin tưởng từ công chúng bởi diễn xuất chất lượng trong A Star Is Born (2018), House Of Gucci (2021). Folie À Deux là căn bệnh rối loạn tâm thần chia sẻ. Chứng bệnh khiến cả hai người cùng tiếp xúc với nguồn năng lực tiêu cực trong tâm trí. Dường như, ở Joker 2, gã hề đã “lây lan” căn bệnh đến Harley Quinn, khiến cả hai người họ “điên có đôi”. Tên phim đã khắc họa được một phần nội dung, xoáy sâu vào mối quan hệ độc hại giữa Joker và Harley Quinn. Ít nhất 15 bài hát nổi tiếng sẽ tái hiện lại trong Joker: Folie À Deux. Joker và Harley Quinn luôn đi kèm âm thanh từ bản nhạc bất hủ Close To You, What The World Needs Now,… Có lẽ, chỉ có âm nhạc mới thể hiện nổi sự điên loạn và chứng rối loạn ảo tưởng. Ngoài ra, âm nhạc còn giúp Joker: Folie À Deux khác biệt với tác phẩm thuộc DC Comic từ trước tới nay cũng như phát huy sở trường của Lady Gaga. Tất nhiên, dù hát ca nhiều bao nhiêu, phim vẫn dán nhãn R, tràn ngập bạo lực.', 122, '2024-12-04', 'joker_folieadeuxdiencodoi.jpg', 'https://www.youtube.com/watch?v=9j5RuZi1FzA', '18', 1, 0,N'Sắp chiếu',556000,0);
 go
 
+-- Chèn dữ liệu vào bảng Actors
+INSERT INTO Actors (Name) VALUES 
+('Leonardo DiCaprio'),
+('Natalie Portman'),
+('Tom Hanks'),
+('Meryl Streep'),
+('Robert Downey Jr.');
+GO
+
+-- Chèn dữ liệu vào bảng MovieActors
+INSERT INTO MovieActors (MovieID, ActorID) VALUES 
+(1, 1),  -- Leonardo DiCaprio tham gia vào bộ phim với MovieID = 1
+(1, 3),  -- Tom Hanks tham gia vào bộ phim với MovieID = 1
+(2, 2),  -- Natalie Portman tham gia vào bộ phim với MovieID = 2
+(3, 4),  -- Meryl Streep tham gia vào bộ phim với MovieID = 3
+(3, 5);  -- Robert Downey Jr. tham gia vào bộ phim với MovieID = 3
+GO
+
+
 -- insert bảng phim - thể loại
 INSERT INTO MovieGenre(MovieID, IdGenre)
 VALUES 
@@ -662,26 +681,7 @@ VALUES
 ('Combo 1', 'Subtitle 3', 'image3.jpg', 1, 0, 1, 65000),
 ('Combo 2', 'Subtitle 4', 'image4.jpg', 2, 1, 0, 10000),
 ('Combo 3', 'Subtitle 5', 'image5.jpg', 3, 0, 1, 15000);
-
-
-
-  SELECT 
-          ComboID,
-          Title,
-          Subtitle,
-          Image,
-          Quantity,
-          Status,
-          IsCombo,
-          Price
-        FROM ComBo
-		WHERE IsCombo = 0
-
-
-
-
-
-
+go
 
 INSERT INTO BuyTicket (BuyTicketId,UserId, MovieID)
 VALUES (1,1, 1);
