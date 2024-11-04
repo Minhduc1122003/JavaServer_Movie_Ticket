@@ -179,7 +179,7 @@ CREATE TABLE Favourite (
 );
 go
 CREATE TABLE BuyTicket (
-    BuyTicketId INT PRIMARY KEY,
+    BuyTicketId INT PRIMARY KEY IDENTITY(1,1),
     UserId INT NOT NULL,
     MovieID INT NOT NULL,
     FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
@@ -683,8 +683,8 @@ VALUES
 ('Combo 3', 'Subtitle 5', 'image5.jpg', 3, 0, 1, 15000);
 go
 
-INSERT INTO BuyTicket (BuyTicketId,UserId, MovieID)
-VALUES (1,1, 1);
+INSERT INTO BuyTicket (UserId, MovieID)
+VALUES (1, 1);
 go
 INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice,ShowtimeID)
 VALUES (1, 3, GETDATE(), 300.0,1);  -- Số lượng ghế là 3, giá vé là 300
