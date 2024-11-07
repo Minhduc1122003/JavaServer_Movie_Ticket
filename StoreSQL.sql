@@ -126,7 +126,6 @@ END
 
 -- duc Store: 
 CREATE PROCEDURE InsertBuyTicket
-    @BuyTicketId INT,
     @UserId INT,
     @MovieID INT,
     @Quantity INT,
@@ -137,9 +136,14 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    DECLARE @BuyTicketId INT;
+
     -- Insert into BuyTicket
-    INSERT INTO BuyTicket (BuyTicketId, UserId, MovieID)
-    VALUES (@BuyTicketId, @UserId, @MovieID);
+    INSERT INTO BuyTicket (UserId, MovieID)
+    VALUES (@UserId, @MovieID);
+
+    -- Get the generated BuyTicketId
+    SET @BuyTicketId = SCOPE_IDENTITY();
 
     -- Insert into BuyTicketInfo
     INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice, ShowtimeID)
