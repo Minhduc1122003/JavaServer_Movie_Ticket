@@ -26,7 +26,7 @@ CREATE TABLE Users (
     Email VARCHAR(155) NOT NULL,
     FullName NVARCHAR(155) NOT NULL,
     PhoneNumber VARCHAR(20) NOT NULL,
-    Photo VARCHAR(50),
+    Photo VARCHAR(200),
     Role INT NOT NULL, -- Sử dụng TINYINT để lưu trữ nhiều giá trị, 0: khach hàng, 1: nhân viên, 2 quản lý, 3: admin
         CreateDate Datetime not null,
         Status NVARCHAR(20) not null, 
