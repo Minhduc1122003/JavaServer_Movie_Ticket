@@ -1,7 +1,7 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET2;
+﻿CREATE DATABASE APP_MOVIE_TICKET4;
 go
 
-USE APP_MOVIE_TICKET2;
+USE APP_MOVIE_TICKET4;
 GO
 
 /*
@@ -42,6 +42,7 @@ CREATE TABLE Shifts (
     CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo ca làm
     Status NVARCHAR(20) NOT NULL -- Trạng thái của ca (e.g., "Active", "Inactive")
 );
+
 GO
 CREATE TABLE Locations (
     LocationId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi vị trí
@@ -697,6 +698,14 @@ VALUES (1,14,1),
  (1,15,1),
  (1,16,1);
 go
+
+select *from ComBo
+
+
+
+
+
+
 
 /*
 select * from BuyTicket
