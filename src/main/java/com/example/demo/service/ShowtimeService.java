@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.ShowtimeDTO;
+import com.example.demo.dto.ShowtimeDate_Time;
 import com.example.demo.dto.ShowtimeForAdminDTO;
 import com.example.demo.entity.Showtime;
 import com.example.demo.repository.ShowtimeRepository;
@@ -63,5 +64,23 @@ public class ShowtimeService {
             dto.setCinemaName(tuple.get("cinemaName", String.class));
             return dto;
         }).collect(Collectors.toList());
+    }
+    
+    public List<ShowtimeDate_Time> getShowtimeByMovieId(Integer movieId){
+    	List<Tuple> tuples = showtimeRepository.findShowtimeByMovieId(movieId);
+    	
+    	if(tuples.isEmpty()) {
+    		return null;
+    	}
+    	
+    	return tuples.stream().map(tuple -> {
+    		ShowtimeDate_Time dto = new ShowtimeDate_Time();
+    		
+    		dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+    		dto.setStartTime(tuple.get("startTime", Time.class));
+    		dto.setCinemaRoomId(tuple.get("cinemaRoomId", Integer.class));
+    		dto.setShowtimeId(tuple.get("showtimeId", Integer.class));
+    		return dto;
+    	}).collect(Collectors.toList());
     }
 }

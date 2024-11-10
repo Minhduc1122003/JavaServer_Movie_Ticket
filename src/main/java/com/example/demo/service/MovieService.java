@@ -40,6 +40,8 @@ public class MovieService {
         	int movieId = movie.getMovieId();
         	
             MovieViewDTO dto = new MovieViewDTO();
+            
+            dto.setMovieId(movieId);
             dto.setPosterUrl(movie.getPosterUrl());
             dto.setTitle(movie.getTitle());
 
@@ -115,12 +117,23 @@ public class MovieService {
         return movieDTOs;
     }
 	
-	public MovieDetailDTO getMovieDetails(int movieId, int userId) {
-		List<Tuple> tuples = movieRepository.findMovieDetailsByMovieIdAndUserId(movieId, userId);
-	    if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
-	    	return null;
+	public MovieDetailDTO getMovieDetails(int movieId, Integer userId) {
+		List<Tuple> tuples;
+
+	    // Kiểm tra nếu userId là null
+	    if (userId == null) {
+	        // Gọi repository mà không cần userId
+	        tuples = movieRepository.findMovieDetailsByMovieId(movieId);
+	    } else {
+	        // Gọi repository với userId
+	        tuples = movieRepository.findMovieDetailsByMovieIdAndUserId(movieId, userId);
 	    }
-	    
+
+	    // Kiểm tra xem danh sách không rỗng
+	    if (tuples.isEmpty()) { 
+	        return null; // Có thể ném ngoại lệ thay vì trả về null
+	    }
+
 	    Tuple firstTuple = tuples.get(0);
 	    
 	    MovieDetailDTO dto = new MovieDetailDTO();
@@ -133,21 +146,28 @@ public class MovieService {
 	    dto.setPosterUrl((String) firstTuple.get(5)); // URL ảnh poster
 	    dto.setTrailerUrl((String) firstTuple.get(6)); // URL video trailer
 	    dto.setAge((String) firstTuple.get(7)); // Độ tuổi
-	    dto.setSubTitle((String) firstTuple.get(8)); // Phụ đề
-	    dto.setVoiceover((String) firstTuple.get(9)); // Lồng ghép
-	    dto.setPrice((Float) firstTuple.get(10)); // Giá vé
-	    dto.setGenres((String) firstTuple.get(11)); // Thể loại phim
-	    dto.setCinemaName((String) firstTuple.get(12)); // Tên rạp
-	    dto.setCinemaAddress((String) firstTuple.get(13)); // Địa chỉ rạp
-	    dto.setReviewContents((String) firstTuple.get(14)); // Các đánh giá
-	    dto.setAverageRating((Float) firstTuple.get(15)); // Đánh giá trung bình
-	    dto.setReviewCount((Integer) firstTuple.get(16)); // Số lượng đánh giá
-	    dto.setRating9_10((Integer) firstTuple.get(17)); // Số lượng đánh giá từ 9 đến 10
-	    dto.setRating7_8((Integer) firstTuple.get(18)); // Số lượng đánh giá từ 7 đến 8
-	    dto.setRating5_6((Integer) firstTuple.get(19)); // Số lượng đánh giá từ 5 đến 6
-	    dto.setRating3_4((Integer) firstTuple.get(20)); // Số lượng đánh giá từ 3 đến 4
-	    dto.setRating1_2((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 1 đến 2
-	    dto.setFavourite((Boolean) firstTuple.get(22)); // Kiểm tra nếu là phim yêu thích
+	    dto.setSubTitle((Boolean) firstTuple.get(8)); // Phụ đề
+	    dto.setVoiceover((Boolean) firstTuple.get(9)); // Lồng ghép
+	    dto.setPrice((Double) firstTuple.get(10)); // Giá vé
+	    dto.setActors((String) firstTuple.get(11)); // Diễn viên
+	    dto.setGenres((String) firstTuple.get(12)); // Thể loại phim
+	    dto.setCinemaName((String) firstTuple.get(13)); // Tên rạp
+	    dto.setCinemaAddress((String) firstTuple.get(14)); // Địa chỉ rạp
+	    dto.setReviewContents((String) firstTuple.get(15)); // Các đánh giá
+	    dto.setAverageRating((Double) firstTuple.get(16)); // Đánh giá trung bình
+	    dto.setReviewCount((Integer) firstTuple.get(17)); // Số lượng đánh giá
+	    dto.setRating9_10((Integer) firstTuple.get(18)); // Số lượng đánh giá từ 9 đến 10
+	    dto.setRating7_8((Integer) firstTuple.get(19)); // Số lượng đánh giá từ 7 đến 8
+	    dto.setRating5_6((Integer) firstTuple.get(20)); // Số lượng đánh giá từ 5 đến 6
+	    dto.setRating3_4((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 3 đến 4
+	    dto.setRating1_2((Integer) firstTuple.get(22)); // Số lượng đánh giá từ 1 đến 2
+	    Object value = firstTuple.get(23);
+	    if (value instanceof Boolean) {
+	        dto.setFavourite((Boolean) value);
+	    } else {
+	        // Xử lý khi giá trị không phải là boolean
+	        dto.setFavourite(false); // hoặc true tùy theo logic của bạn
+	    }
 	    
 	    return dto;
 	}

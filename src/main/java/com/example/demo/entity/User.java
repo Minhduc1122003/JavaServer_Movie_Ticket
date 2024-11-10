@@ -32,7 +32,7 @@ public class User {
     private String email;
     private String fullName;
     private String phoneNumber;
-    private String photo = null;
+    private String photo = "https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/aef0b5d5-c0fa-475c-86f9-fc5106a8f046-avatar-null.jpg?alt=media";
     private int role = 0;
     private LocalDateTime createDate = LocalDateTime.now();
     private String status = "Đang hoạt động";

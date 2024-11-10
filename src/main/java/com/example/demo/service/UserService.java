@@ -30,11 +30,32 @@ public class UserService {
     public User getUserById(int userId) {
         return userRepository.findById(userId).orElse(null);
     }
+    
+    public String getPhotoById(int userId) {
+    	return userRepository.findPhotoById(userId);
+    }
 
     public User createUser(User user) {
     	String encodedPassword = passwordEncoder.encode(user.getPassword());
     	user.setPassword(encodedPassword);
         return userRepository.save(user);
+    }
+    
+    public boolean updateAvatar(int userId, String imgUrl) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        
+        if (userOptional.isPresent()) {
+            User existingUser = userOptional.get();
+            
+            if (imgUrl != null) {
+                existingUser.setPhoto(imgUrl);
+            }
+            
+            userRepository.save(existingUser);
+            return true;
+        } else {
+            return false; // Trả về false nếu không tìm thấy người dùng
+        }
     }
 
     public User updateUser(int userId, User user) {

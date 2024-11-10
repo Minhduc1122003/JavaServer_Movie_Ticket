@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.ShowtimeDTO;
+import com.example.demo.dto.ShowtimeDate_Time;
 import com.example.demo.dto.ShowtimeForAdminDTO;
 import com.example.demo.dto.ShowtimeRequest;
 import com.example.demo.entity.Movie;
@@ -28,6 +29,11 @@ public class ShowtimeController {
     @GetMapping("/getAll")
     public List<Showtime> getAll(){
     	return showtimeService.getAll();
+    }
+    
+    @GetMapping("/getByMovieId/{id}")
+    public List<ShowtimeDate_Time> getShowtimeByMovieId (@PathVariable Integer id){
+    	return showtimeService.getShowtimeByMovieId(id);
     }
     
     @GetMapping("/getListByAdmin")
