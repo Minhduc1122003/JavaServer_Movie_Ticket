@@ -1,16 +1,7 @@
-<<<<<<< HEAD
-﻿CREATE DATABASE APP_MOVIE_TICKET5;
+CREATE DATABASE APP_MOVIE_TICKET6;
 go
-
-USE APP_MOVIE_TICKET5;
-=======
-
-CREATE DATABASE APP_MOVIE_TICKET_test;
+USE APP_MOVIE_TICKET6;
 go
-USE APP_MOVIE_TICKET_test;
->>>>>>> d0fd27324c1e5ce08d5c46d3ddcab21a09ac85ad
-GO
-
 /*
 select * from Users
 select * from Cinemas
@@ -691,21 +682,6 @@ VALUES
 ('Combo 1', 'Subtitle 3', 'image3.jpg', 1, 0, 1, 65000),
 ('Combo 2', 'Subtitle 4', 'image4.jpg', 2, 1, 0, 10000),
 ('Combo 3', 'Subtitle 5', 'image5.jpg', 3, 0, 1, 15000);
-go
-
-INSERT INTO BuyTicket (UserId, MovieID)
-VALUES (1, 1);
-go
-INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice,ShowtimeID)
-VALUES (1, 3, GETDATE(), 300.0,1);  -- Số lượng ghế là 3, giá vé là 300
-go
-INSERT INTO TicketSeat (BuyTicketId, SeatID)
-VALUES (1, 14), (1, 15), (1, 16);
-go
-INSERT INTO SeatReservation (ShowtimeID, SeatID,Status)
-VALUES (1,14,1),
- (1,15,1),
- (1,16,1);
 go
 
 
