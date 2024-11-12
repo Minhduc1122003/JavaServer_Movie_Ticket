@@ -17,6 +17,7 @@ select * from Seats
 */
 
 
+
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY(1,1), -- Thiết lập UserId tự động tăng
     UserName VARCHAR(50) NOT NULL,
@@ -215,19 +216,25 @@ go
 CREATE TABLE BuyTicketInfo (
     BuyTicketInfoId INT PRIMARY KEY IDENTITY(1,1),
     BuyTicketId VARCHAR(100) NOT NULL,
-    Quantity int NOT NULL,
     CreateDate Datetime NOT NULL,
     TotalPrice float NOT NULL,
-    ComboID int,
-	ShowtimeID int not null,
-	Status Nvarchar(100) NOT NULL,
-	IsCheckIn bit NOT NULL, -- 0: chưa check in - 1: Đã checkin
+    ShowtimeID int NOT NULL,
+    Status Nvarchar(100) NOT NULL,
+    IsCheckIn bit NOT NULL, -- 0: chưa check in - 1: Đã checkin
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
-    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID),
-	FOREIGN KEY (ComboID) REFERENCES ComBo(ComboID)
+    FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID)
 );
 
-go
+
+CREATE TABLE TicketComboLink (
+    TicketComboLinkId INT PRIMARY KEY IDENTITY(1,1),
+    BuyTicketInfoId INT NOT NULL,   -- Khóa ngoại tham chiếu tới BuyTicketInfo
+    ComboID INT NOT NULL,           -- Khóa ngoại tham chiếu tới ComBo
+    ComboQuantity INT NOT NULL,     -- Số lượng của mỗi combo trong vé
+    FOREIGN KEY (BuyTicketInfoId) REFERENCES BuyTicketInfo(BuyTicketInfoId),
+    FOREIGN KEY (ComboID) REFERENCES ComBo(ComboID)
+);
+
 
 -- tạo bảng chứa ghế
 CREATE TABLE Seats (
@@ -261,6 +268,15 @@ CREATE TABLE TicketSeat (
     FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
 );
 go
+
+
+
+
+
+
+
+
+
 /*
 SELECT 
     BT.BuyTicketId,
@@ -931,5 +947,114 @@ LEFT JOIN
         */
 
 
+		CREATE PROCEDURE [dbo].[InsertBuyTicket]
+    @BuyTicketId VARCHAR(100),
+    @UserId INT,
+    @MovieID INT,
+    @ShowtimeID INT,
+    @SeatIDs NVARCHAR(MAX), -- List of SeatIDs as a comma-separated string
+    @ComboIDs NVARCHAR(MAX) -- List of ComboIDs and their quantities as a comma-separated string (e.g. '1:2,2:1')
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Insert into BuyTicket
+    INSERT INTO BuyTicket (BuyTicketId, UserId, MovieID)
+    VALUES (@BuyTicketId, @UserId, @MovieID);
+
+    -- Insert into BuyTicketInfo (TotalPrice will be calculated later)
+    DECLARE @BuyTicketInfoId INT;
+    INSERT INTO BuyTicketInfo (BuyTicketId, CreateDate, TotalPrice, ShowtimeID, Status, IsCheckIn)
+    VALUES (@BuyTicketId, GETDATE(), 0, @ShowtimeID, 'Unpaid', 0);  -- Set TotalPrice to 0 initially
+
+    -- Get the BuyTicketInfoId of the newly inserted record
+    SET @BuyTicketInfoId = SCOPE_IDENTITY();
+
+    -- Calculate the movie ticket price based on the number of seats
+    DECLARE @MoviePrice FLOAT;
+    SELECT @MoviePrice = Price FROM Movies WHERE MovieID = @MovieID;
+
+    DECLARE @TotalSeats INT = 0;
+    DECLARE @SeatID INT;
+    DECLARE @SeatPos INT;
+
+    -- Calculate total price for seats
+    DECLARE @TotalSeatPrice FLOAT = 0;
+    -- Split the comma-separated list of SeatIDs
+    WHILE LEN(@SeatIDs) > 0
+    BEGIN
+        SET @SeatPos = CHARINDEX(',', @SeatIDs);
+        IF @SeatPos = 0
+        BEGIN
+            SET @SeatID = CAST(@SeatIDs AS INT);
+            SET @SeatIDs = ''; -- Remove the processed SeatID
+        END
+        ELSE
+        BEGIN
+            SET @SeatID = CAST(LEFT(@SeatIDs, @SeatPos - 1) AS INT);
+            SET @SeatIDs = STUFF(@SeatIDs, 1, @SeatPos, ''); -- Remove the processed SeatID
+        END
+
+        -- Insert into TicketSeat
+        INSERT INTO TicketSeat (BuyTicketId, SeatID)
+        VALUES (@BuyTicketId, @SeatID);
+
+        -- Insert into SeatReservation
+        INSERT INTO SeatReservation (ShowtimeID, SeatID, Status)
+        VALUES (@ShowtimeID, @SeatID, 1); -- Assuming Status is 1 for reserved
+
+        -- Increment total number of seats
+        SET @TotalSeats = @TotalSeats + 1;
+    END
+
+    -- Calculate the total price for movie seats
+    SET @TotalSeatPrice = @TotalSeats * @MoviePrice;
+
+    -- Calculate the total price for combos if provided
+    DECLARE @TotalComboPrice FLOAT = 0; -- Tổng tiền Combo
+    IF @ComboIDs IS NOT NULL AND @ComboIDs <> ''
+    BEGIN
+        DECLARE @ComboID INT;
+        DECLARE @ComboQuantity INT;
+        DECLARE @pos INT;
+        DECLARE @pair NVARCHAR(100);
+
+        -- Split the comma-separated list of ComboIDs and their quantities
+        WHILE LEN(@ComboIDs) > 0
+        BEGIN
+            SET @pos = CHARINDEX(',', @ComboIDs);
+            IF @pos = 0
+            BEGIN
+                SET @pair = @ComboIDs;
+                SET @ComboIDs = ''; -- Remove the processed pair
+            END
+            ELSE
+            BEGIN
+                SET @pair = LEFT(@ComboIDs, @pos - 1);
+                SET @ComboIDs = STUFF(@ComboIDs, 1, @pos, ''); -- Remove the processed pair
+            END
+
+            -- Split the pair into ComboID and ComboQuantity
+            SET @ComboID = CAST(LEFT(@pair, CHARINDEX(':', @pair) - 1) AS INT);
+            SET @ComboQuantity = CAST(SUBSTRING(@pair, CHARINDEX(':', @pair) + 1, LEN(@pair)) AS INT);
+
+            -- Insert into TicketComboLink
+            INSERT INTO TicketComboLink (BuyTicketInfoId, ComboID, ComboQuantity)
+            VALUES (@BuyTicketInfoId, @ComboID, @ComboQuantity);
+
+            -- Tính tổng tiền combo
+            DECLARE @ComboPrice FLOAT;
+            SELECT @ComboPrice = Price FROM ComBo WHERE ComboID = @ComboID;
+            SET @TotalComboPrice = @TotalComboPrice + (@ComboQuantity * @ComboPrice);
+        END
+    END
+
+    -- Update the TotalPrice in BuyTicketInfo with the total price for seats + combos
+    DECLARE @TotalPrice FLOAT = @TotalSeatPrice + @TotalComboPrice;
+    UPDATE BuyTicketInfo
+    SET TotalPrice = @TotalPrice
+    WHERE BuyTicketInfoId = @BuyTicketInfoId;
+
+END
 
 
