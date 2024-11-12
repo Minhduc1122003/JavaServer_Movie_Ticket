@@ -1,7 +1,7 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET_test;
+﻿CREATE DATABASE APP_MOVIE_TICKET5;
 go
 
-USE APP_MOVIE_TICKET_test;
+USE APP_MOVIE_TICKET5;
 GO
 
 /*
@@ -134,7 +134,6 @@ CREATE TABLE Movies (
 );
 go
 
-
 CREATE TABLE Actors (
     ActorID INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(255) NOT NULL,
@@ -149,7 +148,7 @@ CREATE TABLE MovieActors (
     CONSTRAINT FK_MovieActors_MovieID FOREIGN KEY (MovieID) REFERENCES Movies (MovieID),
     CONSTRAINT FK_MovieActors_ActorID FOREIGN KEY (ActorID) REFERENCES Actors (ActorID)
 );
-GO
+GO 
 
 
 CREATE TABLE MovieGenre (
@@ -181,13 +180,14 @@ CREATE TABLE Favourite (
 );
 go
 CREATE TABLE BuyTicket (
-    BuyTicketId INT PRIMARY KEY IDENTITY(1,1),
+    BuyTicketId VARCHAR (100) PRIMARY KEY,
     UserId INT NOT NULL,
     MovieID INT NOT NULL,
     FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
 go
+
 
 CREATE TABLE Showtime (
     ShowtimeID INT PRIMARY KEY IDENTITY(1,1),    -- Mã lịch chiếu, tự động tăng
@@ -216,20 +216,20 @@ go
 
 CREATE TABLE BuyTicketInfo (
     BuyTicketInfoId INT PRIMARY KEY IDENTITY(1,1),
-    BuyTicketId INT NOT NULL,
+    BuyTicketId VARCHAR(100) NOT NULL,
     Quantity int NOT NULL,
     CreateDate Datetime NOT NULL,
     TotalPrice float NOT NULL,
     ComboID int,
 	ShowtimeID int not null,
+	Status Nvarchar(100) NOT NULL,
+	IsCheckIn bit NOT NULL, -- 0: chưa check in - 1: Đã checkin
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
     FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID),
 	FOREIGN KEY (ComboID) REFERENCES ComBo(ComboID)
 );
 
 go
-
-
 
 -- tạo bảng chứa ghế
 CREATE TABLE Seats (
@@ -257,7 +257,7 @@ GO
 
 CREATE TABLE TicketSeat (
     TicketSeatID INT PRIMARY KEY IDENTITY(1,1), -- Khóa chính tự động tăng
-    BuyTicketId INT NOT NULL,                   -- Mã vé đã mua
+    BuyTicketId VARCHAR(100) NOT NULL,                   -- Mã vé đã mua
     SeatID INT NOT NULL,                        -- Mã ghế đã đặt
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),  -- Ràng buộc khóa ngoại với BuyTicket
     FOREIGN KEY (SeatID) REFERENCES Seats(SeatID)                 -- Ràng buộc khóa ngoại với Seats
