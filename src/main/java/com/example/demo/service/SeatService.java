@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,21 +23,22 @@ public class SeatService {
 		return seatRepository.findAll();
 	}
 	
-	public List<SeatResponse> getSeats(int showTimeID, int cinemaRoomID) {
-		List<Tuple> tuples = seatRepository.findSeatsByShowtimeAndCinemaRoom(showTimeID, cinemaRoomID);
-		if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
-	    	return null;
+	public List<SeatResponse> findSeatsByShowtimeAndCinemaRoom(int showtimeId, int cinemaRoomId) {
+	    List<Tuple> results = seatRepository.findSeatsByShowtimeAndCinemaRoom(showtimeId, cinemaRoomId);
+	    List<SeatResponse> seatDtos = new ArrayList<>();
+
+	    for (Tuple tuple : results) {
+	        SeatResponse seatDto = new SeatResponse(
+	                (int) tuple.get(0), // seatID
+	                (int) tuple.get(1), // cinemaRoomID
+	                (String) tuple.get(2), // chairCode
+	                (boolean) tuple.get(3), // defectiveChair
+	                ((int) tuple.get(4)) == 1 // reservationStatus, chuyển đổi từ int sang boolean
+	        );
+	        seatDtos.add(seatDto);
 	    }
-		
-		return tuples.stream().map(tuple -> {
-			SeatResponse dto = new SeatResponse();
-			dto.setSeatID(tuple.get("seatID", Integer.class));
-			dto.setCinemaRoomID(tuple.get("cinemaRoomID", Integer.class));
-			dto.setChairCode(tuple.get("chairCode", String.class));
-			dto.setDefectiveChair(tuple.get("defectiveChair", Boolean.class));
-			dto.setReservationStatus(tuple.get("reservationStatus", Boolean.class));
-			
-			return dto;
-		}).collect(Collectors.toList());
+
+	    return seatDtos;
 	}
+
 }

@@ -1,7 +1,7 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET;
-go
 
-USE APP_MOVIE_TICKET;
+CREATE DATABASE APP_MOVIE_TICKET_test;
+go
+USE APP_MOVIE_TICKET_test;
 GO
 
 /*
@@ -26,7 +26,7 @@ CREATE TABLE Users (
     Email VARCHAR(155) NOT NULL,
     FullName NVARCHAR(155) NOT NULL,
     PhoneNumber VARCHAR(20) NOT NULL,
-    Photo VARCHAR(50),
+    Photo VARCHAR(200),
     Role INT NOT NULL, -- Sử dụng TINYINT để lưu trữ nhiều giá trị, 0: khach hàng, 1: nhân viên, 2 quản lý, 3: admin
         CreateDate Datetime not null,
         Status NVARCHAR(20) not null, 
@@ -42,6 +42,7 @@ CREATE TABLE Shifts (
     CreateDate DATETIME DEFAULT GETDATE(), -- Ngày tạo ca làm
     Status NVARCHAR(20) NOT NULL -- Trạng thái của ca (e.g., "Active", "Inactive")
 );
+
 GO
 CREATE TABLE Locations (
     LocationId INT PRIMARY KEY IDENTITY(1,1), -- ID tự động tăng cho mỗi vị trí
@@ -137,6 +138,7 @@ go
 CREATE TABLE Actors (
     ActorID INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(255) NOT NULL,
+	Image NVARCHAR(255) NOT NULL,
 );
 GO
 
@@ -438,13 +440,14 @@ VALUES
 go
 
 -- Chèn dữ liệu vào bảng Actors
-INSERT INTO Actors (Name) VALUES 
-('Leonardo DiCaprio'),
-('Natalie Portman'),
-('Tom Hanks'),
-('Meryl Streep'),
-('Robert Downey Jr.');
+INSERT INTO Actors (Name, Image) VALUES 
+('Leonardo DiCaprio', 'image1.jpg'),
+('Natalie Portman', 'image1.jpg'),
+('Tom Hanks', 'image1.jpg'),
+('Meryl Streep', 'image1.jpg'),
+('Robert Downey Jr.', 'image1.jpg');
 GO
+
 
 -- Chèn dữ liệu vào bảng MovieActors
 INSERT INTO MovieActors (MovieID, ActorID) VALUES 
@@ -697,6 +700,14 @@ VALUES (1,14,1),
  (1,15,1),
  (1,16,1);
 go
+
+
+
+
+
+
+
+
 
 /*
 select * from BuyTicket

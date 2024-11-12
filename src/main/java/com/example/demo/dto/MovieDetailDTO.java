@@ -20,14 +20,15 @@ public class MovieDetailDTO {
     private String posterUrl;
     private String trailerUrl;
     private String age;
-    private String subTitle;
-    private String voiceover;
-    private float price;
+    private boolean subTitle;
+    private boolean voiceover;
+    private double price;
+    private String actors;
     private String genres;
     private String cinemaName;
     private String cinemaAddress;
     private String reviewContents; // Các đánh giá kết hợp thành chuỗi
-    private float averageRating; // Đánh giá trung bình
+    private double averageRating; // Đánh giá trung bình
     private int reviewCount; // Số lượng đánh giá
     private int rating9_10; // Số lượng đánh giá từ 9 đến 10
     private int rating7_8; // Số lượng đánh giá từ 7 đến 8

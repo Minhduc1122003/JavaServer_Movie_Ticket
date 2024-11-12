@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.User;
+import com.example.demo.service.FirebaseStorageService;
 import com.example.demo.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/users")
@@ -27,6 +29,9 @@ public class UserController {
 	
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private FirebaseStorageService firebaseStorageService;
     
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
@@ -47,6 +52,12 @@ public class UserController {
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
     
+    @GetMapping("/getPhotoById/{id}")
+    public ResponseEntity<String> getPhotoById(@PathVariable int id){
+    	String img = userService.getPhotoById(id);
+    	return img != null ? ResponseEntity.ok(img) : ResponseEntity.notFound().build();
+    }
+    
     @PostMapping("/create")
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
@@ -55,6 +66,27 @@ public class UserController {
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody User user) {
         return userService.updateUser(id, user);
+    }
+    
+    @PutMapping("/update-avatar")
+    public ResponseEntity<String> updateAvatar(@RequestParam("userId") int userId, @RequestParam("file") MultipartFile file) {
+        try {
+            // Tải lên file và lấy URL của ảnh
+            String imgUrl = firebaseStorageService.uploadFile(file);
+            
+            // Cập nhật ảnh đại diện cho người dùng
+            boolean isUpdated = userService.updateAvatar(userId, imgUrl);
+            
+            // Kiểm tra kết quả và trả về phản hồi tương ứng
+            if (isUpdated) {
+                return ResponseEntity.status(HttpStatus.OK).body("Avatar updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi trong quá trình cập nhật");
+        }
     }
     
 //    @PreAuthorize("hasRole('ADMIN')")

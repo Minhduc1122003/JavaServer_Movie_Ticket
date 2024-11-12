@@ -52,6 +52,12 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Integer> {
             "ORDER BY S.ShowtimeDate, S.StartTime", nativeQuery = true)
 	List<Tuple> findShowtimeListForAdmin();
 	
-//	@Query(name = "Showtime.findShowtimeListForAdmin", nativeQuery = true)
-//	List<Tuple> findShowtimeListForAdmin();
+	
+	@Query(value = """
+	        SELECT showtimeDate, startTime, cinemaRoomID, showtimeID
+	        FROM Showtime
+	        WHERE MovieID = :movieId
+	        ORDER BY showtimeDate
+	        """, nativeQuery = true)
+	List<Tuple> findShowtimeByMovieId(@Param("movieId") Integer movieId);
 }

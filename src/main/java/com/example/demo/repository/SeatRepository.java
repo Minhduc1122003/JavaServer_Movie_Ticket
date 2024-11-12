@@ -15,20 +15,20 @@ import jakarta.persistence.Tuple;
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Integer> {
 	@Query(value = """
-			SELECT 
-            s.SeatID,
-            s.CinemaRoomID,
-            s.ChairCode,
-            s.DefectiveChair,
-            COALESCE(sr.Status, 0) AS ReservationStatus
-        FROM 
-            Seats s
-        LEFT JOIN 
-            SeatReservation sr ON s.SeatID = sr.SeatID AND sr.ShowtimeID = :showTimeID
-        WHERE 
-            s.CinemaRoomID = :cinemaRoomID
-        ORDER BY 
-            s.SeatID
+			  SELECT 
+			    s.seatID,
+			    s.cinemaRoomID,
+			    s.chairCode,
+			    s.defectiveChair,
+			    COALESCE(sr.Status, 0) AS reservationStatus
+			FROM 
+			    Seats s
+			LEFT JOIN 
+			    SeatReservation sr ON s.SeatID = sr.SeatID AND sr.ShowtimeID = :showtimeId
+			WHERE 
+			    s.CinemaRoomID = :cinemaRoomId
+			ORDER BY 
+			    s.SeatID;
 			""", nativeQuery = true)
-	List<Tuple> findSeatsByShowtimeAndCinemaRoom(@Param("showTimeID") int showTimeID, @Param("cinemaRoomID") int cinemaRoomID);
+	List<Tuple> findSeatsByShowtimeAndCinemaRoom(@Param("showtimeId") int showtimeId, @Param("cinemaRoomId") int cinemaRoomId);
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MovieViewDTO {
+	private int movieId;
 	private String posterUrl;
     private String title;
     private double rating;
