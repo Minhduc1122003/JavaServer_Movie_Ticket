@@ -1,7 +1,7 @@
-﻿CREATE DATABASE APP_MOVIE_TICKET4;
+﻿CREATE DATABASE APP_MOVIE_TICKET_test;
 go
 
-USE APP_MOVIE_TICKET4;
+USE APP_MOVIE_TICKET_test;
 GO
 
 /*
@@ -138,6 +138,7 @@ go
 CREATE TABLE Actors (
     ActorID INT PRIMARY KEY IDENTITY(1,1),
     Name NVARCHAR(255) NOT NULL,
+	Image NVARCHAR(255) NOT NULL,
 );
 GO
 
@@ -439,13 +440,14 @@ VALUES
 go
 
 -- Chèn dữ liệu vào bảng Actors
-INSERT INTO Actors (Name) VALUES 
-('Leonardo DiCaprio'),
-('Natalie Portman'),
-('Tom Hanks'),
-('Meryl Streep'),
-('Robert Downey Jr.');
+INSERT INTO Actors (Name, Image) VALUES 
+('Leonardo DiCaprio', 'image1.jpg'),
+('Natalie Portman', 'image1.jpg'),
+('Tom Hanks', 'image1.jpg'),
+('Meryl Streep', 'image1.jpg'),
+('Robert Downey Jr.', 'image1.jpg');
 GO
+
 
 -- Chèn dữ liệu vào bảng MovieActors
 INSERT INTO MovieActors (MovieID, ActorID) VALUES 
@@ -699,7 +701,7 @@ VALUES (1,14,1),
  (1,16,1);
 go
 
-select *from ComBo
+
 
 
 
