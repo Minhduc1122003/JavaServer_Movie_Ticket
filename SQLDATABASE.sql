@@ -702,255 +702,167 @@ go
 
 
 
+UPDATE Movies
+SET PosterUrl = CASE MovieID
+	When 1 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/lamgiauvoima.jpg?alt=media&token=a147a4f1-f3f7-440f-882a-e61c6c3f808b'
+    WHEN 2 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/timkiemtainangamphu.jpg?alt=media&token=04331d0e-9e84-4ae9-9ca8-1dff89dcf23f'
+    WHEN 3 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/khongnoidieudu.jpg?alt=media&token=312360a5-1eb4-4c68-9557-83e5f551a1c4'
+    WHEN 4 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/joker.jpg?alt=media&token=d46c7a83-fd3d-4e25-a4d1-558465f3bd63'
+    WHEN 5 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/quyan.jpg?alt=media&token=a78fc924-ac76-41c5-b8c1-5aa1248b4928'
+    WHEN 6 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/thecrowbaothu.jpg?alt=media&token=43899b05-5d35-4796-9f1b-c1b3c1828517'
+    WHEN 7 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/anhtraivuotmoitamtai.jpg?alt=media&token=4480e453-6416-4430-83e7-8d9e64a94930'
+    WHEN 8 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/baothuditimchu.jpg?alt=media&token=b052fcb0-e414-435b-b107-58bc3ca84b07'
+    WHEN 9 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/thamkichdigiao.jpg?alt=media&token=bbcc45c1-af4a-43f3-a78d-1b875ad8acd4'
+    WHEN 10 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/cam.jpg?alt=media&token=23d667e1-ea9e-4164-8908-9be6190c1275'
+    WHEN 11 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/codauhaomon.jpg?alt=media&token=d307740b-cf69-4767-b184-eacb31571173'
+    WHEN 12 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/han.jpg?alt=media&token=1dc35010-783d-4972-a683-150e25feb7e4'
+    WHEN 13 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/transformermot.jpg?alt=media&token=7a279880-7614-4b9c-a2d9-c348291385eb'
+    WHEN 14 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/doanhcongduoctoi.jpg?alt=media&token=d76367f8-05dd-4307-acaf-966e1514ccad'
+    WHEN 15 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/minhhon.jpg?alt=media&token=6241152b-7e4f-4c22-836c-71ed5b7db8bd'
+    WHEN 16 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/henhovoisatnhan.jpg?alt=media&token=7035d714-4a6a-4aea-9e3b-3fef7647531d'
+    WHEN 17 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/joker_folieadeuxdiencodoi.jpg?alt=media&token=6109fba0-7c4a-4a0a-a393-cb10df420f2f'
+	WHEN 18 THEN 'https://firebasestorage.googleapis.com/v0/b/movieticket-77cf5.appspot.com/o/joker_folieadeuxdiencodoi.jpg?alt=media&token=6109fba0-7c4a-4a0a-a393-cb10df420f2f'
+    ELSE PosterUrl -- Giữ nguyên giá trị PosterUrl nếu không khớp với bất kỳ MovieID nào
+END
+WHERE MovieID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
 
-
-
-
-
-
-/*
-select * from BuyTicket
-SELECT 
-    bt.BuyTicketId, 
-    bt.UserId, 
-    bt.MovieID, 
-	mv.Title,
-    bti.Quantity, 
-    bti.CreateDate, 
-    bti.TotalPrice,
-    STRING_AGG(ss.ChairCode, ', ') AS Seats,  -- Gộp các ChairCode thành một chuỗi
-    st.StartTime AS StartTime  -- Lấy thời gian chiếu từ bảng Showtime
-	
-FROM 
-    BuyTicket bt
-JOIN 
-    BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
-JOIN 
-    TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
-JOIN 
-    Seats ss ON ts.SeatID = ss.SeatID  -- Lấy tên ghế từ bảng Seats
-JOIN 
-    Showtime st ON bti.ShowtimeID = st.ShowtimeID  -- Kết nối với bảng Showtime
-JOIN Movies mv ON st.MovieID = mv.MovieID -- Kết nối với bảng Movie
-GROUP BY 
-    bt.BuyTicketId, 
-    bt.UserId, 
-    bt.MovieID, 
-    bti.Quantity, 
-    bti.CreateDate, 
-    bti.TotalPrice,
-    st.StartTime,	mv.Title;  -- Đảm bảo thêm st.Showtime vào GROUP BY
-
-
-
-	*/
-
-/*
-SELECT * FROM Showtime WHERE MovieID =2
-
-
-DECLARE @InputDate DATE = '2024-09-30';
-DECLARE @InputTime TIME = '21:00';
-DECLARE @movieID INT = 1;
-
-SELECT 
-    M.Title AS MovieTitle,
-    M.Duration AS MovieDuration,  -- Lấy thêm thời lượng phim
-    S.CinemaRoomID,
-    S.ShowtimeDate,
-    S.StartTime,
-    DATEADD(MINUTE, M.Duration, CAST(S.StartTime AS DATETIME)) AS EndTime  -- Tính thời gian kết thúc
-FROM 
-    Showtime S
-JOIN 
-    Movies M ON S.MovieID = M.MovieID
-WHERE 
-    S.ShowtimeDate = @InputDate
-    AND S.StartTime > @InputTime
-    AND M.MovieID = @movieID
-ORDER BY 
-    S.StartTime;
-
-        
- SELECT 
-          s.SeatID,
-                  s.CinemaRoomID,
-          s.ChairCode,
-                  s.DefectiveChair, 
-                 
-          COALESCE(sr.Status, 0) AS ReservationStatus
-        FROM 
-          Seats s
-        LEFT JOIN 
-          SeatReservation sr ON s.SeatID = sr.SeatID AND sr.ShowtimeID = 1
-        WHERE 
-          s.CinemaRoomID = 1 -- Lọc theo CinemaRoomID
-        ORDER BY 
-          s.SeatID;
-
-
-                  ----new 23/09 5:43 ---
-
-DECLARE @RoomID INT = 1;  -- RoomID của phòng chiếu bắt đầu
-DECLARE @Row CHAR(1);  -- Hàng ghế (A, B, C,...)
-DECLARE @SeatNumber INT;  -- Số ghế (1, 2, 3,...)
-
-WHILE @RoomID <= 6  -- Giả sử có 6 phòng chiếu
+CREATE PROCEDURE [dbo].[FindAllBuyTicketByUserId]
+    @UserId INT
+AS
 BEGIN
-    SET @Row = 'A';  -- Bắt đầu từ hàng 'A'
-    
-    -- Duyệt qua từng hàng từ 'A' đến 'M'
-    WHILE ASCII(@Row) <= ASCII('M')  
-    BEGIN
-        SET @SeatNumber = 1;  -- Đặt lại số ghế bắt đầu từ 1
-        
-        -- Duyệt qua từng ghế từ 1 đến 16 trong mỗi hàng
-        WHILE @SeatNumber <= 16  
-        BEGIN
-            -- Xác định mã ghế theo hàng và số ghế (ví dụ A1, A2,... M16,...)
-            INSERT INTO Seats (CinemaRoomID, ChairCode, Status)
-            VALUES (@RoomID, @Row + CAST(@SeatNumber AS NVARCHAR(10)), 0);
-            
-            -- Tăng số ghế lên
-            SET @SeatNumber = @SeatNumber + 1;
-        END
-        
-        -- Chuyển sang hàng tiếp theo (A -> B -> C, v.v.)
-        SET @Row = CHAR(ASCII(@Row) + 1);  
-    END
-    
-    -- Chuyển sang phòng chiếu tiếp theo
-    SET @RoomID = @RoomID + 1;
-END;
-GO
-        */
+    SET NOCOUNT ON;
 
+    SELECT 
+        bt.BuyTicketId,
+        bti.CreateDate,
+        bti.TotalPrice,
+        bti.Status,
+        bti.IsCheckIn,
+        -- Thông tin phim
+        m.Title AS MovieName,
+        m.PosterUrl,
+        -- Thông tin suất chiếu
+        s.ShowtimeDate,
+        s.StartTime,
+        -- Thông tin rạp và phòng
+        c.CinemaName,
+        cr.CinemaRoomID,
+        -- Thông tin ghế
+        STRING_AGG(se.ChairCode, ', ') AS SeatNumbers,
+        -- Tổng tiền vé (số lượng ghế * giá phim)
+        COUNT(se.SeatID) * m.Price AS TotalTicketPrice,
+        -- Tổng tiền combo
+        (
+            SELECT ISNULL(SUM(co.Price * tcl.ComboQuantity), 0)
+            FROM TicketComboLink tcl
+            JOIN ComBo co ON tcl.ComboID = co.ComboID
+            WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
+        ) AS TotalComboPrice,
+        -- Thông tin combo
+        (
+            SELECT STRING_AGG(CONCAT(co.Title, ' (x', tcl.ComboQuantity, ')'), ', ')
+            FROM TicketComboLink tcl
+            JOIN ComBo co ON tcl.ComboID = co.ComboID
+            WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
+        ) AS ComboDetails
+    FROM BuyTicket bt
+    JOIN BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
+    JOIN Showtime s ON bti.ShowtimeID = s.ShowtimeID
+    JOIN Movies m ON s.MovieID = m.MovieID
+    JOIN CinemaRoom cr ON s.CinemaRoomID = cr.CinemaRoomID
+    JOIN Cinemas c ON cr.CinemaID = c.CinemaID
+    JOIN TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
+    JOIN Seats se ON ts.SeatID = se.SeatID
+    WHERE bt.UserId = @UserId -- Thêm điều kiện UserId
+    GROUP BY 
+        bt.BuyTicketId,
+        bti.CreateDate,
+        bti.TotalPrice,
+        bti.Status,
+        bti.IsCheckIn,
+        m.Title,
+        m.PosterUrl,
+        s.ShowtimeDate,
+        s.StartTime,
+        c.CinemaName,
+        cr.CinemaRoomID,
+        bti.BuyTicketInfoId,
+        m.Price
+    ORDER BY bti.CreateDate DESC;
+END
 
+CREATE PROCEDURE [dbo].[FindOneBuyTicketById]
+	@BuyTicketId VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-
-
-
-
-
-
-
-
-/*
--- Insert dữ liệu cho bảng Favourite
-INSERT INTO Favourite (MovieID, UserId)
-VALUES 
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
-
--- Insert dữ liệu cho bảng BuyTicket
-INSERT INTO BuyTicket (UserId, MovieID)
-VALUES 
-(1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5);
-
--- Insert dữ liệu cho bảng BuyTicketInfo
-INSERT INTO BuyTicketInfo (BuyTicketId, Quantity, CreateDate, TotalPrice, ComboID)
-VALUES 
-(1, 2, GETDATE(), 200.00, NULL),
-(2, 3, GETDATE(), 300.00, NULL),
-(3, 1, GETDATE(), 100.00, NULL),
-(4, 4, GETDATE(), 400.00, NULL),
-(5, 5, GETDATE(), 500.00, NULL);
-
--- Insert dữ liệu cho bảng ComBo
-INSERT INTO ComBo (BuyTicketInfoId, Quantity, Price)
-VALUES 
-( 1, 50.00),
-( 2, 100.00),
-( 1, 50.00),
-( 2, 100.00),
-( 3, 150.00);
-
--- Insert dữ liệu cho bảng Ticket
-INSERT INTO Ticket (BuyTicketId, Price, ChairCode, CinemaRoomID)
-VALUES 
-(1, 100.00, N'A1', 1),
-(2, 200.00, N'B2', 2),
-(3, 150.00, N'C3', 3),
-(4, 180.00, N'D4', 4),
-(5, 220.00, N'E5', 5);
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
--------------- SOCKET IO ---------------------
-CREATE TABLE Conversations (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    User1Id INT NOT NULL,
-    User2Id INT NOT NULL,
-    StartedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (User1Id) REFERENCES Users(UserId) ON DELETE NO ACTION,
-    FOREIGN KEY (User2Id) REFERENCES Users(UserId) ON DELETE NO ACTION
-);
-go
-
-CREATE TABLE Messages (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    SenderId INT NOT NULL,
-    ReceiverId INT NOT NULL,
-    Message NVARCHAR(255) NOT NULL,
-    SentAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-    ConversationId INT NOT NULL,
-    FOREIGN KEY (SenderId) REFERENCES Users(UserId) ON DELETE NO ACTION,
-    FOREIGN KEY (ReceiverId) REFERENCES Users(UserId) ON DELETE NO ACTION,
-    FOREIGN KEY (ConversationId) REFERENCES Conversations(Id) ON DELETE CASCADE
-);
-go
-
- SELECT 
-    m.MovieID,
-    m.Title,
-    m.Description,
-    m.Duration,
-    m.ReleaseDate,
+SELECT 
+    bt.BuyTicketId,
+    bti.CreateDate,
+    bti.TotalPrice,
+    bti.Status,
+    bti.IsCheckIn,
+    -- Thông tin phim
+    m.Title AS MovieName,
     m.PosterUrl,
-    m.TrailerUrl,
-    l.LanguageName,
-    STRING_AGG(g.GenreName, ', ') AS Genres, -- Kết hợp các thể loại thành một chuỗi
+    -- Thông tin suất chiếu
+    s.ShowtimeDate,
+    s.StartTime,
+    -- Thông tin rạp và phòng
     c.CinemaName,
-    c.Address AS CinemaAddress,
-    STRING_AGG(r.Content, ' | ') AS ReviewContents, -- Kết hợp các đánh giá thành một chuỗi
-    AVG(r.Rating) AS AverageRating, -- Tính điểm đánh giá trung bình
-    COUNT(r.IdRate) AS ReviewCount -- Đếm số lượng đánh giá
-FROM 
-    Movies m
-LEFT JOIN 
-    Language l ON m.IdLanguage = l.IdLanguage
-LEFT JOIN 
-    MovieGenre mg ON m.MovieID = mg.MovieID
-LEFT JOIN 
-    Genre g ON mg.IdGenre = g.IdGenre
-LEFT JOIN 
-    Cinemas c ON m.CinemaID = c.CinemaID
-        */
+    cr.CinemaRoomID,
+    -- Thông tin ghế
+    STRING_AGG(se.ChairCode, ', ') AS SeatNumbers,
+    -- Tổng tiền vé (số lượng ghế * giá phim)
+    COUNT(se.SeatID) * m.Price AS TotalTicketPrice,
+    -- Tổng tiền combo
+    (
+        SELECT ISNULL(SUM(co.Price * tcl.ComboQuantity), 0)
+        FROM TicketComboLink tcl
+        JOIN ComBo co ON tcl.ComboID = co.ComboID
+        WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
+    ) AS TotalComboPrice,
+    -- Thông tin combo
+    (
+        SELECT STRING_AGG(CONCAT(co.Title, ' (x', tcl.ComboQuantity, ')'), ', ')
+        FROM TicketComboLink tcl
+        JOIN ComBo co ON tcl.ComboID = co.ComboID
+        WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
+    ) AS ComboDetails
+FROM BuyTicket bt
+JOIN BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
+JOIN Showtime s ON bti.ShowtimeID = s.ShowtimeID
+JOIN Movies m ON s.MovieID = m.MovieID
+JOIN CinemaRoom cr ON s.CinemaRoomID = cr.CinemaRoomID
+JOIN Cinemas c ON cr.CinemaID = c.CinemaID
+JOIN TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
+JOIN Seats se ON ts.SeatID = se.SeatID
+WHERE bt.BuyTicketId = @BuyTicketId
+GROUP BY 
+    bt.BuyTicketId,
+    bti.CreateDate,
+    bti.TotalPrice,
+    bti.Status,
+    bti.IsCheckIn,
+    m.Title,
+    m.PosterUrl,
+    s.ShowtimeDate,
+    s.StartTime,
+    c.CinemaName,
+    cr.CinemaRoomID,
+    bti.BuyTicketInfoId,
+    m.Price
+ORDER BY bti.CreateDate DESC;
+END
 
 
-		CREATE PROCEDURE [dbo].[InsertBuyTicket]
+
+CREATE PROCEDURE [dbo].[InsertBuyTicket]
     @BuyTicketId VARCHAR(100),
     @UserId INT,
     @MovieID INT,
+	@totalPriceAll float,
     @ShowtimeID INT,
     @SeatIDs NVARCHAR(MAX), -- List of SeatIDs as a comma-separated string
     @ComboIDs NVARCHAR(MAX) -- List of ComboIDs and their quantities as a comma-separated string (e.g. '1:2,2:1')
@@ -965,7 +877,7 @@ BEGIN
     -- Insert into BuyTicketInfo (TotalPrice will be calculated later)
     DECLARE @BuyTicketInfoId INT;
     INSERT INTO BuyTicketInfo (BuyTicketId, CreateDate, TotalPrice, ShowtimeID, Status, IsCheckIn)
-    VALUES (@BuyTicketId, GETDATE(), 0, @ShowtimeID, 'Unpaid', 0);  -- Set TotalPrice to 0 initially
+    VALUES (@BuyTicketId, GETDATE(), 0, @ShowtimeID, N'Chưa thanh toán', 0);  -- Set TotalPrice to 0 initially
 
     -- Get the BuyTicketInfoId of the newly inserted record
     SET @BuyTicketInfoId = SCOPE_IDENTITY();
@@ -1050,7 +962,7 @@ BEGIN
     END
 
     -- Update the TotalPrice in BuyTicketInfo with the total price for seats + combos
-    DECLARE @TotalPrice FLOAT = @TotalSeatPrice + @TotalComboPrice;
+    DECLARE @TotalPrice FLOAT = @totalPriceAll;
     UPDATE BuyTicketInfo
     SET TotalPrice = @TotalPrice
     WHERE BuyTicketInfoId = @BuyTicketInfoId;
