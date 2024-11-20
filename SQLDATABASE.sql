@@ -159,13 +159,13 @@ CREATE TABLE MovieGenre (
 );
 go
 
-
 CREATE TABLE Rate (
     IdRate INT PRIMARY KEY IDENTITY(1,1),
     MovieID INT NOT NULL,
     UserId INT NOT NULL,
     Content NVARCHAR(MAX) NOT NULL,
     Rating FLOAT NOT NULL,
+	RatingDate DATETIME NOT NULL DEFAULT GETDATE(),
     FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
     FOREIGN KEY (UserId) REFERENCES Users(UserId)
 );
