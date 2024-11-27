@@ -42,7 +42,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 			JOIN Showtime st ON bti.ShowtimeID = st.ShowtimeID
 			JOIN CinemaRoom cr ON st.CinemaRoomID = cr.CinemaRoomID
 			JOIN Cinemas c ON cr.CinemaID = c.CinemaID
-			where u.UserId = 24
+			where u.UserId = :userId
 			GROUP BY
 			bti.BuyTicketInfoId, m.posterUrl, m.title, st.showtimeDate, st.startTime, c.cinemaName, bti.TotalPrice, bti.status;
 				""", nativeQuery = true)
