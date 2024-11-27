@@ -15,10 +15,9 @@ import jakarta.persistence.Tuple;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 	User findByUserName(String username);
-
 	User findByUserNameAndPassword(String username, String password);
-
 	List<User> findAllByUserNameNot(String username);
+	User findByEmail(String email);
 
 	@Query(value = """
 			select photo

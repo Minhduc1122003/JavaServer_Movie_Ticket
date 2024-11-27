@@ -71,21 +71,6 @@ public class AuthenticationController {
     	tokenBlacklistService.addToBlacklist(token);
     	return ResponseEntity.ok().build();
     }
-    
-    @PostMapping("/sendmail")
-    public ResponseEntity<?> sendEmail(@RequestBody EmailRequest emailRequest){
-    	String title = emailRequest.getTitle();
-    	String content = emailRequest.getContent();
-    	String recipient = emailRequest.getRecipient();
-    	
-    	try {
-			emailService.sendEmail(recipient, title, content);
-			return ResponseEntity.ok("Send mail success !!");
-		} catch (Exception e) {
-			// TODO: handle exception
-			return ResponseEntity.status(500).body("Send mail error: " + e.getMessage());
-		}
-    }
 
     // Xử lý ngoại lệ toàn cục nếu cần
     @ExceptionHandler(Exception.class)

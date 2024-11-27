@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.TicketDTO;
 import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FirebaseStorageService;
 import com.example.demo.service.UserService;
 
@@ -30,6 +31,9 @@ public class UserController {
 	
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserRepository userRepository;
     
     @Autowired
     private FirebaseStorageService firebaseStorageService;
@@ -65,8 +69,12 @@ public class UserController {
     }
     
     @PostMapping("/create")
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+    	if(userRepository.findByEmail(user.getEmail()) != null) {
+    		return ResponseEntity.status(HttpStatus.CONFLICT).body("Email đã tồn tại!");
+    	}
+    	userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body("Đăng ký thành công !");
     }
 
     @PutMapping("/update/{id}")
