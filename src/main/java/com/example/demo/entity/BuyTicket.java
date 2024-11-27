@@ -26,7 +26,7 @@ import lombok.Setter;
 public class BuyTicket {
     @Id
     @Column(name = "BuyTicketId")
-    private Integer buyTicketId;
+    private String buyTicketId;
 
     @ManyToOne
     @JoinColumn(name = "UserId", referencedColumnName = "userId")

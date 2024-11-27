@@ -1,14 +1,20 @@
 package com.example.demo.service;
 
+import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.TicketDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
+
+import jakarta.persistence.Tuple;
 
 @Service
 public class UserService {
@@ -80,6 +86,36 @@ public class UserService {
         }
 
         return userRepository.save(existingUser);
+    }
+    
+    public User updatePassword(int userId, String password) {
+    	User existingUser = userRepository.findById(userId).orElse(null);
+
+        if (password != null && !password.isEmpty()) {
+        	String encodedPassword = passwordEncoder.encode(password);
+            existingUser.setPassword(encodedPassword);
+        }
+
+        return userRepository.save(existingUser);
+    }
+    
+    public List<TicketDTO> getAllTicketByUserId(int userId){
+    	List<Tuple> tuples = userRepository.getTicketByUserId(userId);
+    	
+    	return tuples.stream().map(tuple -> {
+    		TicketDTO dto = new TicketDTO();
+    		
+    		dto.setBuyTicketInfoId(tuple.get("buyTicketInfoId", Integer.class));
+    		dto.setPosterUrl(tuple.get("posterUrl", String.class));
+    		dto.setTitle(tuple.get("title", String.class));
+    		dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+    		dto.setStartTime(tuple.get("startTime", Time.class));
+    		dto.setChairCodes(tuple.get("chairCodes", String.class));
+    		dto.setCinemaName(tuple.get("cinemaName", String.class));
+    		dto.setTotalPrice(tuple.get("totalPrice", Double.class));
+    		dto.setStatus(tuple.get("status", String.class));
+    		return dto;
+    	}).collect(Collectors.toList());
     }
 
     public void deleteUser(int userId) {

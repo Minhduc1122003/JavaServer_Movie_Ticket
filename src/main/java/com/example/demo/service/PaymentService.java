@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.PaymentVNPAYConfig;
@@ -26,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class PaymentService {
+	
+	
+	
     public Map<String, String> paymentWithMomo(long amount, String id) {
         LogUtils.init();
         String requestId = String.valueOf(System.currentTimeMillis());
@@ -57,15 +59,16 @@ public class PaymentService {
     }
 
     public Map<String, String> paymentWithVnPay(long amount, String id) throws UnsupportedEncodingException {
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String orderType = "other";
-        String bankCode = "NCB";
-
-        String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8);
-        String vnp_IpAddr = "127.0.0.1";
-
+    	amount = amount * 100;
+    	String vnp_Version = "2.1.0"; // Phiên bản API VNPay
+    	String vnp_Command = "pay";   // Lệnh thanh toán
+    	String orderType = "other";   // Loại đơn hàng (ở đây là "other")
+    	String bankCode = "NCB";      // Mã ngân hàng mặc định (test NCB)
+    	String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8); // Số tham chiếu đơn hàng (ngẫu nhiên)
+    	String vnp_IpAddr = "127.0.0.1"; // Địa chỉ IP của client (ở đây là localhost)
         String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
+        
+        PaymentVNPAYConfig.vnp_ReturnUrl += id;
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
@@ -82,6 +85,7 @@ public class PaymentService {
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
@@ -116,6 +120,8 @@ public class PaymentService {
         response.put("status", "OK");
         response.put("message", "Successfully");
         response.put("paymentUrl", paymentUrl);
+        
+        
         return response;
     }
 }

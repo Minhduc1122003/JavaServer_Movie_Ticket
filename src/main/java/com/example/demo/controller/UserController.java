@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.TicketDTO;
 import com.example.demo.entity.User;
 import com.example.demo.service.FirebaseStorageService;
 import com.example.demo.service.UserService;
@@ -58,6 +59,11 @@ public class UserController {
     	return img != null ? ResponseEntity.ok(img) : ResponseEntity.notFound().build();
     }
     
+    @GetMapping("/getTicketById/{id}")
+    public List<TicketDTO> getAllTicketById(@PathVariable int id){
+    	return userService.getAllTicketByUserId(id);
+    }
+    
     @PostMapping("/create")
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
@@ -66,6 +72,14 @@ public class UserController {
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable Integer id, @RequestBody User user) {
         return userService.updateUser(id, user);
+    }
+    
+    @PutMapping("/update/password/{id}")
+    public ResponseEntity<String> updatePassword(@PathVariable Integer id, @RequestBody String password) {
+    	password = password.replace("\"", "").trim();
+    	System.out.println("Password check: " + password);
+    	userService.updatePassword(id, password);
+        return ResponseEntity.ok("Update success");
     }
     
     @PutMapping("/update-avatar")

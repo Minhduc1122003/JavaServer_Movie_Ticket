@@ -12,7 +12,7 @@ import com.example.demo.entity.BuyTicket;
 import jakarta.persistence.Tuple;
 
 @Repository
-public interface BuyTicketRepository extends JpaRepository<BuyTicket, Integer>{
+public interface BuyTicketRepository extends JpaRepository<BuyTicket, String>{
 	@Query(value = """
 			SELECT m.title, bi.totalPrice, bi.Quantity, bi.createDate
 			FROM BuyTicket b

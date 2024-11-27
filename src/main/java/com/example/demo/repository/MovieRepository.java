@@ -136,5 +136,57 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	            c.address;
 	        """, nativeQuery = true)
 	List<Tuple> findMovieDetailsByMovieId(@Param("movieId") int movieId);
-
+	
+	@Query(value = """
+			select m.*
+			  from Users u
+			  JOIN Favourite f ON u.UserId = f.UserId
+			  JOIN Movies m ON f.MovieID = m.MovieID
+			  where u.UserId = :userId;
+			""", nativeQuery = true)
+	List<Movie> findMovieByUserId(@Param("userId") int userId);
+	
+	@Query(value = """
+			  SELECT 
+			    m.MovieID,
+			    m.PosterUrl,
+				m.Title,
+			    (SELECT STRING_AGG(g.GenreName, ', ') 
+			        FROM MovieGenre mg
+			        JOIN Genre g ON mg.IdGenre = g.IdGenre
+			        WHERE mg.MovieID = m.MovieID
+			    ) AS Genres, 
+			    ROUND(AVG(r.Rating), 2) AS AverageRating
+			FROM 
+			    Movies m
+			LEFT JOIN  
+			    Rate r ON m.MovieID = r.MovieID
+			
+			GROUP BY 
+			    m.MovieID, m.Title, m.PosterUrl
+			""", nativeQuery = true)
+	List<Tuple> findAllMovieView();
+	
+	@Query(value = """
+			  SELECT 
+			    m.MovieID,
+			    m.PosterUrl,
+				m.Title,
+			    (SELECT STRING_AGG(g.GenreName, ', ') 
+			        FROM MovieGenre mg
+			        JOIN Genre g ON mg.IdGenre = g.IdGenre
+			        WHERE mg.MovieID = m.MovieID
+			    ) AS Genres, 
+			    ROUND(AVG(r.Rating), 2) AS AverageRating
+			FROM 
+			    Movies m
+			LEFT JOIN  
+			    Rate r ON m.MovieID = r.MovieID
+			Where
+				m.StatusMovie = :status
+			GROUP BY 
+			    m.MovieID, m.Title, m.PosterUrl
+			""", nativeQuery = true)
+	List<Tuple> findMovieByStatus(@Param("status") String status);
+	
 }
