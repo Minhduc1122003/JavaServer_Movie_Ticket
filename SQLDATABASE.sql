@@ -855,13 +855,9 @@ BEGIN
         DELETE FROM TicketSeat
         WHERE BuyTicketId = @BuyTicketId;
 
-        -- Xóa dữ liệu trong BuyTicketInfo
-        DELETE FROM BuyTicketInfo
-        WHERE BuyTicketId = @BuyTicketId;
-
-        -- Xóa dữ liệu trong BuyTicket
-        DELETE FROM BuyTicket
-        WHERE BuyTicketId = @BuyTicketId;
+        -- Cập nhật trạng thái trong BuyTicketInfo
+        update BuyTicketInfo set Status = N'Ðã hủy'
+		where BuyTicketId = @BuyTicketId;
 
     END TRY
     BEGIN CATCH
