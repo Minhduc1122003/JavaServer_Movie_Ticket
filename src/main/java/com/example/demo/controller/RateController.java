@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.demo.dto.RateByMovie;
 import com.example.demo.entity.Rate;
 import com.example.demo.service.RateService;
 
@@ -19,6 +20,12 @@ public class RateController {
     @GetMapping("/getAll")
     public List<Rate> getAllRates() {
         return rateService.getAllRates();
+    }
+    
+    @GetMapping("/getByMovieId/{id}")
+    public ResponseEntity<List<RateByMovie>> getAllRateByMovie(@PathVariable int id){
+    	List<RateByMovie> rate = rateService.getRateByMovieId(id);
+    	return ResponseEntity.ok(rate);
     }
 
     @GetMapping("/getById/{id}")
