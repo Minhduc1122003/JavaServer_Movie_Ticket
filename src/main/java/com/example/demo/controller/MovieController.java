@@ -55,6 +55,11 @@ public class MovieController {
     	return movieService.getAllMoviesView();
     }
     
+    @GetMapping("/getAllFavouriteMovieByUserId/{id}")
+	public List<MovieViewDTO> getAllByUserId(@PathVariable int id){
+		return movieService.getAllMoviesViewByUserId(id);
+	}
+    
     @GetMapping("/getAllMovieView/{statusMovie}")
     public List<MovieViewDTO> getMovieByStatusView(@PathVariable String statusMovie){
     	return movieService.getMoviesByStatusView(statusMovie);
