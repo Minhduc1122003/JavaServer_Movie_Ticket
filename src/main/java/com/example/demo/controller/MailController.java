@@ -18,9 +18,6 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.EmailService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 @RequestMapping("/api/mail")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -106,9 +103,7 @@ public class MailController {
 	public ResponseEntity<?> verifyOTP(@RequestBody OtpRequest otpRequest) {
 		String email = otpRequest.getEmail();
 		String otp = otpRequest.getOtp();
-		log.info("OTP & Email: {} {} " + otp, email);
 		String storeOtp = otpStorage.get(email);
-		log.info("Store OTP: {}" + storeOtp, storeOtp);
 		if (storeOtp != null && storeOtp.equals(otp)) {
 			otpStorage.remove(email); // Xóa mã OTP sau khi xác minh thành công
 			return ResponseEntity.ok("OTP verified successfully, proceed to the next page.");
