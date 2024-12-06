@@ -164,6 +164,7 @@ public class MovieService {
 		dto.setCinemaName((String) firstTuple.get(13)); // Tên rạp
 		dto.setCinemaAddress((String) firstTuple.get(14)); // Địa chỉ rạp
 		dto.setReviewContents((String) firstTuple.get(15)); // Các đánh giá
+
 		if (firstTuple.get(16) == null) {
 			dto.setAverageRating(0);
 			dto.setReviewCount(0); // Số lượng đánh giá
@@ -181,6 +182,7 @@ public class MovieService {
 			dto.setRating3_4((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 3 đến 4
 			dto.setRating1_2((Integer) firstTuple.get(22)); // Số lượng đánh giá từ 1 đến 2
 		}
+		// hiển thị trạng thái thích hay không thích
 		Object value = firstTuple.get(23);
 		if (value instanceof Boolean) {
 			dto.setFavourite((Boolean) value);
