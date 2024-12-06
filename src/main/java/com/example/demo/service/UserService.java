@@ -106,6 +106,7 @@ public class UserService {
     		TicketDTO dto = new TicketDTO();
     		
     		dto.setBuyTicketInfoId(tuple.get("buyTicketInfoId", Integer.class));
+    		dto.setBuyTicketId(tuple.get("buyTicketId", String.class));
     		dto.setPosterUrl(tuple.get("posterUrl", String.class));
     		dto.setTitle(tuple.get("title", String.class));
     		dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));

@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TicketDTO {
 	private int buyTicketInfoId;
+	private String buyTicketId;
 	private String posterUrl;
 	private String title;
 	private Date showtimeDate;

@@ -90,5 +90,29 @@ public class BuyTicketController {
         }
     }
 
+    @PostMapping("/delBuyTicket")
+    public ResponseEntity<String> delBuyTicket(@RequestBody String buyTicketId){
+    	Logger logger = LoggerFactory.getLogger(BuyTicketController.class);
+    	buyTicketId = buyTicketId.replace("\"", "").trim();
+    	logger.info(buyTicketId);
+    	try {
+    		if(buyTicketId == null || buyTicketId == "") {
+        		return ResponseEntity.status(404).body("Không tìm thấy mã đặt vé này !");
+        	}
+        	
+        	jdbcTemplate.update("EXEC DeleteBuyTicket ?", buyTicketId);
+        	logger.info("Delete success !");
+        	return ResponseEntity.ok("Delete success !");
+        	
+		} catch (DataAccessException dae) {
+            logger.error("Database error: ", dae);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + dae.getMessage());
+        } catch (Exception e) {
+			// TODO: handle exception
+        	logger.error("Internal server error: " + e);
+        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: " + e.getMessage());
+			
+		}
+    }
 
 }
