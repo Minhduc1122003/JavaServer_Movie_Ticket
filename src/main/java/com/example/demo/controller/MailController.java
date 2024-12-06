@@ -55,11 +55,11 @@ public class MailController {
 				"body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }" +
 				".container { width: 90%; max-width: 600px; margin: auto; background: #ffffff; border-radius: 8px;" +
 				"box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); overflow: hidden; }" +
-				".header { background: #6F3CD7; color: #ffffff; padding: 20px; text-align: center; }" +
+				".header { background: #4F75FF; color: #ffffff; padding: 20px; text-align: center; }" +
 				".header h1 { margin: 0; }" +
 				".content { padding: 20px; }" +
 				".footer { background: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #666; }" +
-				".button { display: inline-block; background: #6F3CD7; color: #ffffff; padding: 10px 20px;" +
+				".button { display: inline-block; background: #4F75FF; color: #ffffff; padding: 10px 20px;" +
 				"border-radius: 5px; text-decoration: none; font-weight: bold; }" +
 				"</style>" +
 				"</head>" +
@@ -71,7 +71,7 @@ public class MailController {
 				"<div class=\"content\">" +
 				"<p>Chào mừng bạn đến với PANTHERs CINEMA!</p>" +
 				"<p>Để tiếp tục quá trình đăng ký tài khoản, mã code của bạn là:</p>" +
-				"<h2 style=\"text-align: center; color: #6F3CD7;\">" + otp + "</h2>" +
+				"<h2 style=\"text-align: center; color: #4F75FF;\">" + otp + "</h2>" +
 				"<p>Vui lòng sử dụng mã này để hoàn tất quá trình đăng ký.</p>" +
 				"<p>Nếu bạn gặp bất kỳ vấn đề nào, hãy liên hệ với chúng tôi.</p>" +
 				"<p>Chân thành cảm ơn,</p>" +
