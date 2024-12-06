@@ -240,7 +240,7 @@ CREATE TABLE BuyTicketInfo (
     FOREIGN KEY (BuyTicketId) REFERENCES BuyTicket(BuyTicketId),
     FOREIGN KEY (ShowtimeID) REFERENCES Showtime(ShowtimeID)
 );
-
+go
 
 CREATE TABLE TicketComboLink (
     TicketComboLinkId INT PRIMARY KEY IDENTITY(1,1),
@@ -250,7 +250,7 @@ CREATE TABLE TicketComboLink (
     FOREIGN KEY (BuyTicketInfoId) REFERENCES BuyTicketInfo(BuyTicketInfoId),
     FOREIGN KEY (ComboID) REFERENCES ComBo(ComboID)
 );
-
+go
 
 -- tạo bảng chứa ghế
 CREATE TABLE Seats (
@@ -577,6 +577,7 @@ SET PosterUrl = CASE MovieID
     ELSE PosterUrl -- Giữ nguyên giá trị PosterUrl nếu không khớp với bất kỳ MovieID nào
 END
 WHERE MovieID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
+go
 
 CREATE PROCEDURE [dbo].[FindAllBuyTicketByUserId]
     @UserId INT
@@ -642,6 +643,7 @@ BEGIN
         m.Price
     ORDER BY bti.CreateDate DESC;
 END
+go
 
 CREATE PROCEDURE [dbo].[FindOneBuyTicketById]
 	@BuyTicketId VARCHAR(100)
@@ -707,8 +709,7 @@ GROUP BY
     m.Price
 ORDER BY bti.CreateDate DESC;
 END
-
-
+go
 
 CREATE PROCEDURE [dbo].[InsertBuyTicket]
     @BuyTicketId VARCHAR(100),
@@ -820,7 +821,52 @@ BEGIN
     WHERE BuyTicketInfoId = @BuyTicketInfoId;
 
 END
+go
 
+CREATE PROCEDURE [dbo].[DeleteBuyTicket]
+    @BuyTicketId VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        -- Xóa dữ liệu liên quan trong TicketComboLink
+        DELETE FROM TicketComboLink
+        WHERE BuyTicketInfoId IN (
+            SELECT BuyTicketInfoId
+            FROM BuyTicketInfo
+            WHERE BuyTicketId = @BuyTicketId
+        );
+
+        -- Xóa dữ liệu liên quan trong SeatReservation
+        DELETE FROM SeatReservation
+        WHERE SeatID IN (
+            SELECT SeatID
+            FROM TicketSeat
+            WHERE BuyTicketId = @BuyTicketId
+        )
+        AND ShowtimeID = (
+            SELECT ShowtimeID
+            FROM BuyTicketInfo
+            WHERE BuyTicketId = @BuyTicketId
+        );
+
+        -- Xóa dữ liệu trong TicketSeat
+        DELETE FROM TicketSeat
+        WHERE BuyTicketId = @BuyTicketId;
+
+        -- Cập nhật trạng thái trong BuyTicketInfo
+        update BuyTicketInfo set Status = N'Ðã hủy'
+		where BuyTicketId = @BuyTicketId;
+
+    END TRY
+    BEGIN CATCH
+        -- Xử lý lỗi nếu có
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50000, @ErrorMessage, 1;
+    END CATCH
+END
+go
 
 CREATE PROCEDURE InsertShowtimeData
     @StartDate DATE,               -- Ngày bắt đầu của tuần
