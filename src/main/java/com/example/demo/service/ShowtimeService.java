@@ -22,65 +22,65 @@ import jakarta.persistence.Tuple;
 @Service
 public class ShowtimeService {
 
-    @Autowired
-    private ShowtimeRepository showtimeRepository;
-    
-    public List<Showtime> getAll(){
-    	return showtimeRepository.findAll();
-    }
+	@Autowired
+	private ShowtimeRepository showtimeRepository;
 
-    public List<ShowtimeDTO> getShowtimes(int movieId, Date date, Time time) {
-    	List<Tuple> tuples = showtimeRepository.findShowtimes(date, time, movieId);
-    	if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
-	    	return null;
-	    }
-    	
-        return tuples.stream().map(tuple -> {
-        	ShowtimeDTO dto = new ShowtimeDTO();
-        	dto.setShowtimeID(tuple.get("showtimeID", Integer .class));
-        	dto.setMovieTitle(tuple.get("movieTitle", String.class));
-        	dto.setMovieDuration(tuple.get("movieDuration", Integer.class));
-        	dto.setCinemaRoomID(tuple.get("cinemaRoomID", Integer.class));
-        	dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
-        	dto.setStartTime(tuple.get("startTime", Time.class));
-        	dto.setEndTime(tuple.get("endTime", Time.class));
-        	return dto;
-        }).collect(Collectors.toList());
-    }
-    
-    public List<ShowtimeForAdminDTO> getShowtimeListForAdmin(){
-    	List<Tuple> tuples = showtimeRepository.findShowtimeListForAdmin();
-    	if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
-	    	return null;
-	    }
-        
-        return tuples.stream().map(tuple -> {
-            ShowtimeForAdminDTO dto = new ShowtimeForAdminDTO();
-            dto.setMovieName(tuple.get("movieName", String.class));
-            dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
-            dto.setStartTime(tuple.get("startTime", Time.class));
-            dto.setMovieDuration(tuple.get("movieDuration", Integer.class));
-            dto.setRoomNumber(tuple.get("roomNumber", Integer.class));
-            dto.setCinemaName(tuple.get("cinemaName", String.class));
-            return dto;
-        }).collect(Collectors.toList());
-    }
-    
-    public List<ShowtimeDate_Time> getShowtimeByMovieId(Integer movieId){
-    	List<Tuple> tuples = showtimeRepository.findShowtimeByMovieId(movieId);
-    	
-    	if(tuples.isEmpty()) {
-    		return null;
-    	}
-    	
-    	return tuples.stream().map(tuple -> {
-    		ShowtimeDate_Time dto = new ShowtimeDate_Time();
-    		
-    		dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
-    		dto.setStartTime(tuple.get("startTime", Time.class));
-    		dto.setCinemaRoomId(tuple.get("cinemaRoomId", Integer.class));
-    		dto.setShowtimeId(tuple.get("showtimeId", Integer.class));
-    		return dto;
-    	}).collect(Collectors.toList());
-    }
+	public List<Showtime> getAll() {
+		return showtimeRepository.findAll();
+	}
+
+	public List<ShowtimeDTO> getShowtimes(int movieId, Date date, Time time) {
+		List<Tuple> tuples = showtimeRepository.findShowtimes(date, time, movieId);
+		if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			ShowtimeDTO dto = new ShowtimeDTO();
+			dto.setShowtimeID(tuple.get("showtimeID", Integer.class));
+			dto.setMovieTitle(tuple.get("movieTitle", String.class));
+			dto.setMovieDuration(tuple.get("movieDuration", Integer.class));
+			dto.setCinemaRoomID(tuple.get("cinemaRoomID", Integer.class));
+			dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+			dto.setStartTime(tuple.get("startTime", Time.class));
+			dto.setEndTime(tuple.get("endTime", Time.class));
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	public List<ShowtimeForAdminDTO> getShowtimeListForAdmin() {
+		List<Tuple> tuples = showtimeRepository.findShowtimeListForAdmin();
+		if (tuples.isEmpty()) { // Kiểm tra xem danh sách không rỗng
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			ShowtimeForAdminDTO dto = new ShowtimeForAdminDTO();
+			dto.setMovieName(tuple.get("movieName", String.class));
+			dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+			dto.setStartTime(tuple.get("startTime", Time.class));
+			dto.setMovieDuration(tuple.get("movieDuration", Integer.class));
+			dto.setRoomNumber(tuple.get("roomNumber", Integer.class));
+			dto.setCinemaName(tuple.get("cinemaName", String.class));
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	public List<ShowtimeDate_Time> getShowtimeByMovieId(Integer movieId) {
+		List<Tuple> tuples = showtimeRepository.findShowtimeByMovieId(movieId);
+
+		if (tuples.isEmpty()) {
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			ShowtimeDate_Time dto = new ShowtimeDate_Time();
+
+			dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+			dto.setStartTime(tuple.get("startTime", Time.class));
+			dto.setCinemaRoomId(tuple.get("cinemaRoomId", Integer.class));
+			dto.setShowtimeId(tuple.get("showtimeId", Integer.class));
+			return dto;
+		}).collect(Collectors.toList());
+	}
 }
