@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RateByMovie {
+	private String photo;
 	private String fullName;
 	private String content;
 	private double rating;

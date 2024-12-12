@@ -15,7 +15,7 @@ import jakarta.persistence.Tuple;
 public interface RateRepository extends JpaRepository<Rate, Integer>{
 	
 	@Query(value = """
-			  select u.FullName, r.content, r.rating, r.ratingDate
+			  select u.photo , u.FullName, r.content, r.rating, r.ratingDate
 		  from Rate r
 		  JOIN Users u ON r.UserId = u.UserId
 		  where r.MovieID = :movieId
