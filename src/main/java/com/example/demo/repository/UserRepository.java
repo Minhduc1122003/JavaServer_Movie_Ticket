@@ -31,19 +31,21 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	User findUserByEmail(@Param("email") String email);
 
 	@Query(value = """
-			select bti.BuyTicketInfoId, bti.BuyTicketId, m.posterUrl, m.title, st.showtimeDate, st.startTime, STRING_AGG(s.chairCode, ', ') AS chairCodes, c.cinemaName, bti.totalPrice, bti.status
-		from Users u
-		JOIN BuyTicket bt ON u.UserId = bt.UserId
-		JOIN Movies m on bt.MovieID = m.MovieID
-		JOIN BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
-		JOIN TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
-		JOIN Seats s ON ts.SeatID = s.SeatID
-		JOIN Showtime st ON bti.ShowtimeID = st.ShowtimeID
-		JOIN CinemaRoom cr ON st.CinemaRoomID = cr.CinemaRoomID
-		JOIN Cinemas c ON cr.CinemaID = c.CinemaID
-		where u.UserId = :userId
-		GROUP BY
-		bti.BuyTicketInfoId, bti.BuyTicketId, m.posterUrl, m.title, st.showtimeDate, st.startTime, c.cinemaName, bti.TotalPrice, bti.status;
-			""", nativeQuery = true)
-List<Tuple> getTicketByUserId(@Param("userId") Integer userId);
+				select bti.BuyTicketInfoId, bti.BuyTicketId, m.posterUrl, m.title, st.showtimeDate, st.startTime, STRING_AGG(s.chairCode, ', ') AS chairCodes, c.cinemaName, bti.totalPrice, bti.status
+			from Users u
+			JOIN BuyTicket bt ON u.UserId = bt.UserId
+			JOIN Movies m on bt.MovieID = m.MovieID
+			JOIN BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
+			JOIN TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
+			JOIN Seats s ON ts.SeatID = s.SeatID
+			JOIN Showtime st ON bti.ShowtimeID = st.ShowtimeID
+			JOIN CinemaRoom cr ON st.CinemaRoomID = cr.CinemaRoomID
+			JOIN Cinemas c ON cr.CinemaID = c.CinemaID
+			where u.UserId = :userId
+			GROUP BY
+			bti.BuyTicketInfoId, bti.BuyTicketId, m.posterUrl, m.title, st.showtimeDate, st.startTime, c.cinemaName, bti.TotalPrice, bti.status
+			ORDER BY
+			bti.BuyTicketInfoId DESC;
+				""", nativeQuery = true)
+	List<Tuple> getTicketByUserId(@Param("userId") Integer userId);
 }
