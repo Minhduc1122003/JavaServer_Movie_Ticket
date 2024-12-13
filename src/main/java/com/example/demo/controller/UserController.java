@@ -113,7 +113,7 @@ public class UserController {
         		userService.updateUser(userId, user);
         		return ResponseEntity.ok("Update success");
         	} else {
-        		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mật khẩu không đúng !");
+        		return ResponseEntity.status(HttpStatus.CONFLICT).body("Mật khẩu cũ không đúng!");
         	}
 		} catch (Exception e) {
 			// TODO: handle exception
