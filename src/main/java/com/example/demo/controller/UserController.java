@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.TicketDTO;
+import com.example.demo.dto.UpdatePasswordDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FirebaseStorageService;
@@ -37,6 +39,9 @@ public class UserController {
     
     @Autowired
     private FirebaseStorageService firebaseStorageService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
@@ -73,6 +78,9 @@ public class UserController {
     	if(userRepository.findByEmail(user.getEmail()) != null) {
     		return ResponseEntity.status(HttpStatus.CONFLICT).body("Email đã tồn tại!");
     	}
+    	if(userRepository.findByUserName(user.getUserName()) != null) {
+    		return ResponseEntity.status(HttpStatus.CONFLICT).body("Tài khoản đã tồn tại!");
+    	}
     	userService.createUser(user);
         return ResponseEntity.status(HttpStatus.OK).body("Đăng ký thành công !");
     }
@@ -88,6 +96,29 @@ public class UserController {
     	System.out.println("Password check: " + password);
     	userService.updatePassword(id, password);
         return ResponseEntity.ok("Update success");
+    }
+    
+    @PutMapping("/update/passwordByUser")
+    public ResponseEntity<String> updatePasswordByUser(@RequestBody UpdatePasswordDTO updatePasswordDTO) {
+    	int userId = updatePasswordDTO.getUserId();
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại!");
+        }
+        
+    	try {
+    		if(passwordEncoder.matches(updatePasswordDTO.getPasswordOld(), user.getPassword())) {
+    			user.setPassword(updatePasswordDTO.getPasswordNew());
+        		userService.updateUser(userId, user);
+        		return ResponseEntity.ok("Update success");
+        	} else {
+        		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mật khẩu không đúng !");
+        	}
+		} catch (Exception e) {
+			// TODO: handle exception
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server Error !!");
+		}
     }
     
     @PutMapping("/update-avatar")
