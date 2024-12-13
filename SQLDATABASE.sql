@@ -1,6 +1,6 @@
-CREATE DATABASE APP_MOVIE_TICKET8;
+CREATE DATABASE APP_MOVIE_TICKET9;
 go
-USE APP_MOVIE_TICKET8;
+USE APP_MOVIE_TICKET9;
 go
 /*
 select * from Users
@@ -577,7 +577,8 @@ SET PosterUrl = CASE MovieID
     ELSE PosterUrl -- Giữ nguyên giá trị PosterUrl nếu không khớp với bất kỳ MovieID nào
 END
 WHERE MovieID IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
-go
+
+GO
 
 CREATE PROCEDURE [dbo].[FindAllBuyTicketByUserId]
     @UserId INT
@@ -587,7 +588,7 @@ BEGIN
 
     SELECT 
         bt.BuyTicketId,
-        bti.CreateDate,
+        bti.CreateDate, -- Thêm trường CreateDate
         bti.TotalPrice,
         bti.Status,
         bti.IsCheckIn,
@@ -596,54 +597,17 @@ BEGIN
         m.PosterUrl,
         -- Thông tin suất chiếu
         s.ShowtimeDate,
-        s.StartTime,
-        -- Thông tin rạp và phòng
-        c.CinemaName,
-        cr.CinemaRoomID,
-        -- Thông tin ghế
-        STRING_AGG(se.ChairCode, ', ') AS SeatNumbers,
-        -- Tổng tiền vé (số lượng ghế * giá phim)
-        COUNT(se.SeatID) * m.Price AS TotalTicketPrice,
-        -- Tổng tiền combo
-        (
-            SELECT ISNULL(SUM(co.Price * tcl.ComboQuantity), 0)
-            FROM TicketComboLink tcl
-            JOIN ComBo co ON tcl.ComboID = co.ComboID
-            WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
-        ) AS TotalComboPrice,
-        -- Thông tin combo
-        (
-            SELECT STRING_AGG(CONCAT(co.Title, ' (x', tcl.ComboQuantity, ')'), ', ')
-            FROM TicketComboLink tcl
-            JOIN ComBo co ON tcl.ComboID = co.ComboID
-            WHERE tcl.BuyTicketInfoId = bti.BuyTicketInfoId
-        ) AS ComboDetails
+        s.StartTime
     FROM BuyTicket bt
     JOIN BuyTicketInfo bti ON bt.BuyTicketId = bti.BuyTicketId
     JOIN Showtime s ON bti.ShowtimeID = s.ShowtimeID
     JOIN Movies m ON s.MovieID = m.MovieID
-    JOIN CinemaRoom cr ON s.CinemaRoomID = cr.CinemaRoomID
-    JOIN Cinemas c ON cr.CinemaID = c.CinemaID
-    JOIN TicketSeat ts ON bt.BuyTicketId = ts.BuyTicketId
-    JOIN Seats se ON ts.SeatID = se.SeatID
-    WHERE bt.UserId = @UserId -- Thêm điều kiện UserId
-    GROUP BY 
-        bt.BuyTicketId,
-        bti.CreateDate,
-        bti.TotalPrice,
-        bti.Status,
-        bti.IsCheckIn,
-        m.Title,
-        m.PosterUrl,
-        s.ShowtimeDate,
-        s.StartTime,
-        c.CinemaName,
-        cr.CinemaRoomID,
-        bti.BuyTicketInfoId,
-        m.Price
-    ORDER BY bti.CreateDate DESC;
+    WHERE bt.UserId = @UserId -- Điều kiện UserId
+    ORDER BY bti.CreateDate DESC; -- Sắp xếp theo CreateDate
 END
-go
+
+GO
+
 
 CREATE PROCEDURE [dbo].[FindOneBuyTicketById]
 	@BuyTicketId VARCHAR(100)
@@ -658,6 +622,7 @@ SELECT
     bti.Status,
     bti.IsCheckIn,
     -- Thông tin phim
+	m.MovieID,
     m.Title AS MovieName,
     m.PosterUrl,
     -- Thông tin suất chiếu
@@ -699,6 +664,7 @@ GROUP BY
     bti.TotalPrice,
     bti.Status,
     bti.IsCheckIn,
+	m.MovieID,
     m.Title,
     m.PosterUrl,
     s.ShowtimeDate,
@@ -709,7 +675,74 @@ GROUP BY
     m.Price
 ORDER BY bti.CreateDate DESC;
 END
-go
+GO
+
+CREATE PROCEDURE [dbo].[GetUserRegistrationByDateRange]
+    @StartDate DATETIME,
+    @EndDate DATETIME,
+    @Role INT
+AS
+BEGIN
+    WITH DateRange AS (
+        -- Tạo danh sách các ngày trong khoảng từ @StartDate đến @EndDate
+        SELECT CAST(@StartDate AS DATETIME) AS Date
+        UNION ALL
+        SELECT DATEADD(DAY, 1, Date)
+        FROM DateRange
+        WHERE Date < @EndDate
+    )
+    SELECT
+        DR.Date, 
+        ISNULL(COUNT(U.UserId), 0) AS NumberOfUsers -- Đếm số lượng tài khoản đăng ký trong mỗi ngày, nếu không có thì trả về 0
+    FROM DateRange DR
+    LEFT JOIN Users U ON CAST(U.CreateDate AS DATE) = DR.Date -- So sánh ngày tạo tài khoản với các ngày trong khoảng
+        AND U.Role = @Role -- Vai trò người dùng
+    GROUP BY DR.Date
+    ORDER BY DR.Date;
+END;
+GO
+
+CREATE PROCEDURE [dbo].[GetRevenueByDate]
+    @StartDate DATE,  -- Ngày bắt đầu
+    @EndDate DATE,    -- Ngày kết thúc
+    @Role INT         -- Tham số Role để xác định người dùng
+AS
+BEGIN
+    -- Tạo bảng chứa tất cả các ngày trong khoảng từ @StartDate đến @EndDate
+    WITH DateRange AS (
+        SELECT @StartDate AS DateValue
+        UNION ALL
+        SELECT DATEADD(DAY, 1, DateValue)
+        FROM DateRange
+        WHERE DateValue < @EndDate
+    )
+    -- Truy vấn tổng doanh thu theo ngày với điều kiện Role của người dùng và trạng thái thanh toán
+    SELECT 
+        d.DateValue AS [Date],                          -- Ngày
+        COALESCE(COUNT(DISTINCT bti.BuyTicketId), 0) AS InvoiceCount, -- Số lượng hóa đơn
+        COALESCE(SUM(bti.TotalPrice), 0) AS TotalTicketPrice, -- Tổng tiền vé
+        COALESCE(SUM(tcl.ComboQuantity * c.Price), 0) AS TotalComboPrice,   -- Tổng tiền combo
+        COALESCE(SUM(bti.TotalPrice + ISNULL(tcl.ComboQuantity * c.Price, 0)), 0) AS TotalRevenue -- Tổng doanh thu
+    FROM DateRange d
+    LEFT JOIN BuyTicketInfo bti 
+        ON CAST(bti.CreateDate AS DATE) = d.DateValue -- Chỉ tính doanh thu theo ngày mua vé
+        AND bti.Status IN (N'Đã thanh toán', N'Ðã thanh toán') -- Xét cả hai giá trị trạng thái thanh toán
+    LEFT JOIN BuyTicket bt 
+        ON bt.BuyTicketId = bti.BuyTicketId
+    LEFT JOIN Showtime s 
+        ON s.ShowtimeID = bti.ShowtimeID
+    LEFT JOIN Users u 
+        ON u.UserID = bt.UserID 
+    LEFT JOIN TicketComboLink tcl
+        ON tcl.BuyTicketInfoId = bti.BuyTicketInfoId
+    LEFT JOIN ComBo c
+        ON c.ComboID = tcl.ComboID
+    WHERE (u.Role = @Role OR u.Role IS NULL)
+    GROUP BY d.DateValue
+    ORDER BY d.DateValue;
+END
+GO
+
 
 CREATE PROCEDURE [dbo].[InsertBuyTicket]
     @BuyTicketId VARCHAR(100),
@@ -936,4 +969,130 @@ BEGIN
         PRINT ERROR_MESSAGE();
     END CATCH
 END;
+GO
+CREATE PROCEDURE [dbo].[sp_InsertMovie]
+    @CinemaID INT,
+    @Title NVARCHAR(255),
+    @Description NVARCHAR(MAX),
+    @Duration INT,
+    @ReleaseDate DATE,
+    @PosterUrl VARCHAR(255),
+    @TrailerUrl VARCHAR(255),
+    @Age NVARCHAR(20),
+    @SubTitle BIT,
+    @Voiceover BIT,
+    @StatusMovie NVARCHAR(20),
+    @Price FLOAT,
+    @ActorsData NVARCHAR(MAX), -- JSON array chứa {name, image} của actors
+    @GenreIds NVARCHAR(MAX)    -- JSON array chứa list id của genres
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- 1. Insert Movie
+        DECLARE @MovieID INT;
+        INSERT INTO Movies (
+            CinemaID, Title, Description, Duration, ReleaseDate, 
+            PosterUrl, TrailerUrl, Age, SubTitle, Voiceover, 
+            StatusMovie, Price, IsDelete
+        )
+        VALUES (
+            @CinemaID, @Title, @Description, @Duration, @ReleaseDate,
+            @PosterUrl, @TrailerUrl, @Age, @SubTitle, @Voiceover,
+            @StatusMovie, @Price, 0
+        );
+        
+        SET @MovieID = SCOPE_IDENTITY();
+
+        -- 2. Insert Actors và MovieActors
+        INSERT INTO Actors (Name, Image)
+        SELECT 
+            JSON_VALUE(value, '$.name') as Name,
+            JSON_VALUE(value, '$.image') as Image
+        FROM OPENJSON(@ActorsData);
+
+        INSERT INTO MovieActors (MovieID, ActorID)
+        SELECT 
+            @MovieID,
+            ActorID
+        FROM Actors
+        WHERE Name IN (
+            SELECT JSON_VALUE(value, '$.name')
+            FROM OPENJSON(@ActorsData)
+        );
+
+        -- 3. Insert MovieGenre
+        INSERT INTO MovieGenre (MovieID, IdGenre)
+        SELECT 
+            @MovieID,
+            value as IdGenre
+        FROM OPENJSON(@GenreIds);
+
+        COMMIT TRANSACTION;
+        
+        -- Trả về MovieID mới được tạo
+        SELECT @MovieID as NewMovieID;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+        
+        THROW;
+    END CATCH
+END;
+GO
+CREATE PROCEDURE InsertAttendance
+    @UserId INT,                   -- ID của nhân viên
+    @ShiftId INT,                  -- ID của ca làm việc
+    @Latitude VARCHAR(50),         -- Tọa độ vĩ độ khi chấm công
+    @Longitude VARCHAR(50),        -- Tọa độ kinh độ khi chấm công
+    @Location NVARCHAR(255),       -- Vị trí mô tả nơi chấm công
+    @IsLate BIT,                   -- Trạng thái đi trễ (0: đúng giờ, 1: đi trễ)
+    @IsEarlyLeave BIT              -- Trạng thái về sớm (0: không, 1: có)
+AS
+BEGIN
+    -- Kiểm tra nếu người dùng đã có chấm công trong ca làm việc hiện tại
+    IF EXISTS (
+        SELECT 1
+        FROM Attendance
+        WHERE UserId = @UserId
+          AND ShiftId = @ShiftId
+          AND CheckInTime IS NOT NULL
+          AND CheckOutTime IS NULL -- Nếu đã có check-in mà chưa checkout
+    )
+    BEGIN
+        -- Nếu nhân viên đã check-in và chưa checkout, thông báo lỗi
+        RAISERROR('Nhân viên đã chấm công vào ca này. Vui lòng checkout trước khi chấm công lại.', 16, 1);
+        RETURN;
+    END
+
+    -- Nếu không có chấm công, thực hiện chèn bản ghi mới vào bảng Attendance
+    INSERT INTO Attendance (
+        UserId,
+        ShiftId,
+        CheckInTime,
+        Latitude,
+        Longitude,
+        Location,
+        IsLate,
+        IsEarlyLeave,
+        Status
+    )
+    VALUES (
+        @UserId,                    -- ID nhân viên
+        @ShiftId,                   -- ID ca làm việc
+        GETDATE(),                  -- Thời gian chấm công (ngày giờ hiện tại)
+        @Latitude,                  -- Tọa độ vĩ độ
+        @Longitude,                 -- Tọa độ kinh độ
+        @Location,                  -- Vị trí mô tả
+        @IsLate,                    -- Trạng thái đi trễ
+        @IsEarlyLeave,              -- Trạng thái về sớm
+        N'Chưa ra ca'                 -- Trạng thái chấm công (đã hoàn thành)
+    );
+    
+    -- Trả về thông báo thành công
+    SELECT 'Chấm công thành công' AS Message;
+END
 GO

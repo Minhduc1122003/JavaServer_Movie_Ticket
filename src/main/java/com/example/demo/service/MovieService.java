@@ -51,7 +51,7 @@ public class MovieService {
 			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
 			dto.setTitle(tuple.get("Title", String.class));
 			String genresString = tuple.get("Genres", String.class);
-			List<String> genres = Arrays.asList(genresString, ", ");
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
 			dto.setGenres(genres);
 			if (tuple.get("AverageRating") == null) {
 				dto.setRating(0);

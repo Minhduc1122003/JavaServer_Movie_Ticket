@@ -50,6 +50,7 @@ public class MailController {
 			return ResponseEntity.status(404).body("Email not found in our records.");
 		}
 
+
 		String otp = generateOTP();
 		String subject = "Đăng ký tài khoản PANTHERs CINEMA";
 		String htmlContent = "<html>" +
