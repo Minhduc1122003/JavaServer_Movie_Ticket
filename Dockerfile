@@ -1,8 +1,10 @@
-FROM maven:3.8.3-openjdk-17 as build
+# Stage 1: Build
+FROM jelastic/maven:3.9.5-openjdk-21 as build
 COPY pom.xml .
 COPY . .
 RUN mvn clean package -DskipTests
 
+# Stage 2: Runtime
 FROM openjdk:21-jdk-slim
 COPY --from=build /target/APP_MOVIE_TICKET_ONLINE-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
