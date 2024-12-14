@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.dto.TicketDTO;
 import com.example.demo.dto.UpdatePasswordDTO;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.FirebaseStorageService;
@@ -86,7 +87,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public User updateUser(@PathVariable Integer id, @RequestBody User user) {
+    public UserDTO updateUser(@PathVariable Integer id, @RequestBody User user) {
         return userService.updateUser(id, user);
     }
     
