@@ -138,13 +138,24 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	List<Tuple> findMovieDetailsByMovieId(@Param("movieId") int movieId);
 	
 	@Query(value = """
-			select m.*
-			  from Users u
-			  JOIN Favourite f ON u.UserId = f.UserId
-			  JOIN Movies m ON f.MovieID = m.MovieID
-			  where u.UserId = :userId;
+			SELECT 
+			    m.MovieID,
+			    m.PosterUrl,
+				m.Title,
+			    (SELECT STRING_AGG(g.GenreName, ', ') 
+			        FROM MovieGenre mg
+			        JOIN Genre g ON mg.IdGenre = g.IdGenre
+			        WHERE mg.MovieID = m.MovieID
+			    ) AS Genres
+			FROM 
+			    Movies m
+			LEFT JOIN  
+			    Favourite f ON m.MovieID = f.MovieID
+			where f.UserId = :userId
+			GROUP BY 
+			    m.MovieID, m.Title, m.PosterUrl
 			""", nativeQuery = true)
-	List<Movie> findMovieByUserId(@Param("userId") int userId);
+	List<Tuple> findMovieByUserId(@Param("userId") int userId);
 	
 	@Query(value = """
 			  SELECT 

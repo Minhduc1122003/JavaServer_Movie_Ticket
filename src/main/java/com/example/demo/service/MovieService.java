@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.MovieDetailDTO;
 import com.example.demo.dto.MovieViewDTO;
+import com.example.demo.dto.MovieViewFavourite;
 import com.example.demo.entity.Genre;
 import com.example.demo.entity.Movie;
 import com.example.demo.entity.MovieGenre;
@@ -62,43 +63,24 @@ public class MovieService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<MovieViewDTO> getAllMoviesViewByUserId(int userId) {
-		List<Movie> movies = movieRepository.findMovieByUserId(userId);
-		List<Integer> movieIds = movies.stream().map(Movie::getMovieId).collect(Collectors.toList());
+	public List<MovieViewFavourite> getAllMoviesViewByUserId(int userId) {
+		List<Tuple> tuples = movieRepository.findMovieByUserId(userId);
 
-		// Truy vấn thể loại cho tất cả bộ phim trong một lần
-		Map<Integer, List<String>> genreNamesMap = new HashMap<>();
-		List<Map<String, Object>> genreResults = movieGenreRepository.findGenreNamesByMovieIds(movieIds);
-
-		for (Map<String, Object> result : genreResults) {
-			Integer movieId = (Integer) result.get("movieId");
-			String genreNamesStr = (String) result.get("genreNames");
-			List<String> genreNames = Arrays.asList(genreNamesStr.split(","));
-			genreNamesMap.put(movieId, genreNames);
+		if (tuples == null) {
+			return null;
 		}
 
-		List<MovieViewDTO> movieDTOs = new ArrayList<>();
-		for (Movie movie : movies) {
-			MovieViewDTO dto = new MovieViewDTO();
-			dto.setMovieId(movie.getMovieId());
-			dto.setPosterUrl(movie.getPosterUrl());
-			dto.setTitle(movie.getTitle());
+		return tuples.stream().map(tuple -> {
+			MovieViewFavourite dto = new MovieViewFavourite();
 
-			// Tính điểm trung bình
-			List<Rate> rates = movie.getRates();
-			double averageRating = rates != null && !rates.isEmpty()
-					? rates.stream().mapToDouble(Rate::getRating).average().orElse(0)
-					: 0;
-			dto.setRating(Math.round(averageRating * 10.0) / 10.0);
-
-			// Lấy thể loại từ Map đã truy vấn trước
-			List<String> genreNames = genreNamesMap.getOrDefault(movie.getMovieId(), Collections.emptyList());
-			dto.setGenres(genreNames);
-
-			movieDTOs.add(dto);
-		}
-
-		return movieDTOs;
+			dto.setMovieId(tuple.get("MovieID", Integer.class));
+			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
+			dto.setTitle(tuple.get("Title", String.class));
+			String genresString = tuple.get("Genres", String.class);
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
+			dto.setGenres(genres);
+			return dto;
+		}).collect(Collectors.toList());
 	}
 
 	public List<MovieViewDTO> getMoviesByStatusView(String statusMovie) {
