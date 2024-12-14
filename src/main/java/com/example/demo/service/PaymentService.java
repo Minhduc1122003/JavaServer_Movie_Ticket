@@ -33,7 +33,7 @@ public class PaymentService {
         String requestId = String.valueOf(System.currentTimeMillis());
         String orderId = String.valueOf(System.currentTimeMillis());
         String orderInfo = "Pay With MoMo";
-        String returnURL = "http://localhost:9011/";
+        String returnURL = "https://pantherscinema.vercel.app/";
         String notifyURL = "https://google.com.vn";
 
         Environment environment = Environment.selectEnv("dev");
@@ -65,7 +65,7 @@ public class PaymentService {
     	String orderType = "other";   // Loại đơn hàng (ở đây là "other")
     	String bankCode = "NCB";      // Mã ngân hàng mặc định (test NCB)
     	String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8); // Số tham chiếu đơn hàng (ngẫu nhiên)
-    	String vnp_IpAddr = "127.0.0.1"; // Địa chỉ IP của client (ở đây là localhost)
+        String vnp_IpAddr = "0.0.0.0";
         String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
         
         PaymentVNPAYConfig.vnp_ReturnUrl += id;
