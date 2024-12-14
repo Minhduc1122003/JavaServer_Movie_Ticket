@@ -97,7 +97,32 @@ public class MovieService {
 			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
 			dto.setTitle(tuple.get("Title", String.class));
 			String genresString = tuple.get("Genres", String.class);
-			List<String> genres = Arrays.asList(genresString, ", ");
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
+			dto.setGenres(genres);
+			if (tuple.get("AverageRating") == null) {
+				dto.setRating(0);
+			} else {
+				dto.setRating(tuple.get("AverageRating", Double.class));
+			}
+			return dto;
+		}).collect(Collectors.toList());
+	}
+	
+	public List<MovieViewDTO> getMoviesByGenreView(String genre) {
+		List<Tuple> tuples = movieRepository.findMovieByGenre(genre);
+
+		if (tuples == null) {
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			MovieViewDTO dto = new MovieViewDTO();
+
+			dto.setMovieId(tuple.get("MovieID", Integer.class));
+			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
+			dto.setTitle(tuple.get("Title", String.class));
+			String genresString = tuple.get("Genres", String.class);
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
 			dto.setGenres(genres);
 			if (tuple.get("AverageRating") == null) {
 				dto.setRating(0);
