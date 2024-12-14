@@ -146,13 +146,12 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 			        FROM MovieGenre mg
 			        JOIN Genre g ON mg.IdGenre = g.IdGenre
 			        WHERE mg.MovieID = m.MovieID
-			    ) AS Genres, 
-			    ROUND(AVG(r.Rating), 2) AS AverageRating
+			    ) AS Genres
 			FROM 
 			    Movies m
 			LEFT JOIN  
-			    Rate r ON m.MovieID = r.MovieID
-			where r.UserId = :userId
+			    Favourite f ON m.MovieID = f.MovieID
+			where f.UserId = :userId
 			GROUP BY 
 			    m.MovieID, m.Title, m.PosterUrl
 			""", nativeQuery = true)
