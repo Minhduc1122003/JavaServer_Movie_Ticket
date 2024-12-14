@@ -65,7 +65,7 @@ public class PaymentService {
     	String orderType = "other";   // Loại đơn hàng (ở đây là "other")
     	String bankCode = "NCB";      // Mã ngân hàng mặc định (test NCB)
     	String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8); // Số tham chiếu đơn hàng (ngẫu nhiên)
-        String vnp_IpAddr = "0.0.0.0";
+        String vnp_IpAddr = "";
         String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
         
         PaymentVNPAYConfig.vnp_ReturnUrl += id;
