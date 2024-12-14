@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.TicketDTO;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
@@ -64,8 +65,12 @@ public class UserService {
         }
     }
 
-    public User updateUser(int userId, User user) {
-    	User existingUser = userRepository.findById(userId).orElse(null);
+    public UserDTO updateUser(int userId, User user) {
+        User existingUser = userRepository.findById(userId).orElse(null);
+
+        if (existingUser == null) {
+            throw new RuntimeException("Người dùng không tồn tại với ID: " + userId);
+        }
 
         if (user.getUserName() != null && !user.getUserName().isEmpty()) {
             existingUser.setUserName(user.getUserName());
@@ -80,12 +85,20 @@ public class UserService {
             existingUser.setPhoneNumber(user.getPhoneNumber());
         }
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-        	String encodedPassword = passwordEncoder.encode(user.getPassword());
-        	user.setPassword(encodedPassword);
-            existingUser.setPassword(user.getPassword());
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            existingUser.setPassword(encodedPassword);
         }
 
-        return userRepository.save(existingUser);
+        User updatedUser = userRepository.save(existingUser);
+
+        // Chuyển đổi từ User sang UserDTO
+        return new UserDTO(
+            updatedUser.getUserId(),
+            updatedUser.getUserName(),
+            updatedUser.getFullName(),
+            updatedUser.getEmail(),
+            updatedUser.getPhoneNumber()
+        );
     }
     
     public User updatePassword(int userId, String password) {

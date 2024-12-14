@@ -58,18 +58,10 @@ public class AuthenticationController {
         
         // Tạo JWT token nếu xác thực thành công
         final String jwt = jwtUtil.generateToken(user);
-        UserDTO userDTO = new UserDTO(user.getUserId(), user.getUserName(), user.getFullName(), user.getEmail(), user.getPhoneNumber(), user.getPhoto());
+        UserDTO userDTO = new UserDTO(user.getUserId(), user.getUserName(), user.getFullName(), user.getEmail(), user.getPhoneNumber());
         
         // Trả về JWT token trong response
         return ResponseEntity.ok(new AuthenticationResponse(jwt, userDTO));
-    }
-    
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request){
-    	String token = request.getHeader("Authorization").substring(7); // Bỏ "Bearer " ra
-    	
-    	tokenBlacklistService.addToBlacklist(token);
-    	return ResponseEntity.ok().build();
     }
 
     // Xử lý ngoại lệ toàn cục nếu cần
