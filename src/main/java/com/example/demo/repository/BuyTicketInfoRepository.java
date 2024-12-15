@@ -15,5 +15,5 @@ public interface BuyTicketInfoRepository extends JpaRepository<BuyTicketInfo, In
 	@Modifying
     @Transactional
     @Query(value = "UPDATE BuyTicketInfo SET status = :status WHERE BuyTicketId = :id;", nativeQuery = true)
-    void updateStatusById(@Param("id") Integer id, @Param("status") String status);
+    void updateStatusById(@Param("id") String id, @Param("status") String status);
 }

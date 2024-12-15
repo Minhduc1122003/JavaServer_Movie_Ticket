@@ -75,7 +75,7 @@ public ResponseEntity<?> getServerTime() {
 	    try {
 	        // Lấy các tham số cần thiết từ callback
 	        String vnp_ResponseCode = params.get("vnp_ResponseCode");
-	        String id = params.get("id");
+	        String id = params.get("vnp_TxnRef");
 	        // Kiểm tra các tham số cần thiết
 	        if (vnp_ResponseCode == null) {
 	            log.error("Missing required parameters in callback");
@@ -86,8 +86,8 @@ public ResponseEntity<?> getServerTime() {
 	        // Kiểm tra mã phản hồi từ VNPay (00 là thành công)
 	        if ("00".equals(vnp_ResponseCode)) {
 	            // Thực hiện hành động khi thanh toán thành công
-	        	Integer numId = Integer.parseInt(id);
-	            buyTicketInfoRepository.updateStatusById(numId, "Đã thanh toán");
+	        	
+	            buyTicketInfoRepository.updateStatusById(id, "Đã thanh toán");
 	            log.info("Payment success");
 	            return ResponseEntity.ok("Payment success!");
 	        } else {
