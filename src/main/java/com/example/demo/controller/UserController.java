@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.dto.HistoryDTO;
 import com.example.demo.dto.TicketDTO;
 import com.example.demo.dto.UpdatePasswordDTO;
 import com.example.demo.dto.UserDTO;
@@ -72,6 +73,11 @@ public class UserController {
     @GetMapping("/getTicketById/{id}")
     public List<TicketDTO> getAllTicketById(@PathVariable int id){
     	return userService.getAllTicketByUserId(id);
+    }
+    
+    @GetMapping("/getHistory/{id}")
+    public List<HistoryDTO> getHistoryById(@PathVariable int id){
+    	return userService.getHistory(id);
     }
     
     @PostMapping("/create")

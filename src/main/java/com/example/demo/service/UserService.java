@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.HistoryDTO;
 import com.example.demo.dto.TicketDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
@@ -128,6 +129,26 @@ public class UserService {
     		dto.setCinemaName(tuple.get("cinemaName", String.class));
     		dto.setTotalPrice(tuple.get("totalPrice", Double.class));
     		dto.setStatus(tuple.get("status", String.class));
+    		return dto;
+    	}).collect(Collectors.toList());
+    }
+    
+    public List<HistoryDTO> getHistory(int userId){
+    	List<Tuple> tuples = userRepository.getHistory(userId);
+    	
+    	return tuples.stream().map(tuple -> {
+    		HistoryDTO dto = new HistoryDTO();
+    		
+    		dto.setBuyTicketInfoId(tuple.get("buyTicketInfoId", Integer.class));
+    		dto.setBuyTicketId(tuple.get("buyTicketId", String.class));
+    		dto.setPosterUrl(tuple.get("posterUrl", String.class));
+    		dto.setTitle(tuple.get("title", String.class));
+    		dto.setShowtimeDate(tuple.get("showtimeDate", Date.class));
+    		dto.setStartTime(tuple.get("startTime", Time.class));
+    		dto.setChairCodes(tuple.get("chairCodes", String.class));
+    		dto.setCinemaName(tuple.get("cinemaName", String.class));
+    		dto.setTotalPrice(tuple.get("totalPrice", Double.class));
+    		dto.setCheckIn(tuple.get("isCheckIn", Boolean.class));
     		return dto;
     	}).collect(Collectors.toList());
     }
