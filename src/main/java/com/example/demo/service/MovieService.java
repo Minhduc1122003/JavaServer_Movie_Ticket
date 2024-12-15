@@ -97,7 +97,32 @@ public class MovieService {
 			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
 			dto.setTitle(tuple.get("Title", String.class));
 			String genresString = tuple.get("Genres", String.class);
-			List<String> genres = Arrays.asList(genresString, ", ");
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
+			dto.setGenres(genres);
+			if (tuple.get("AverageRating") == null) {
+				dto.setRating(0);
+			} else {
+				dto.setRating(tuple.get("AverageRating", Double.class));
+			}
+			return dto;
+		}).collect(Collectors.toList());
+	}
+	
+	public List<MovieViewDTO> getMoviesByGenreView(String genre) {
+		List<Tuple> tuples = movieRepository.findMovieByGenre(genre);
+
+		if (tuples == null) {
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			MovieViewDTO dto = new MovieViewDTO();
+
+			dto.setMovieId(tuple.get("MovieID", Integer.class));
+			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
+			dto.setTitle(tuple.get("Title", String.class));
+			String genresString = tuple.get("Genres", String.class);
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
 			dto.setGenres(genres);
 			if (tuple.get("AverageRating") == null) {
 				dto.setRating(0);
@@ -146,6 +171,7 @@ public class MovieService {
 		dto.setCinemaName((String) firstTuple.get(13)); // Tên rạp
 		dto.setCinemaAddress((String) firstTuple.get(14)); // Địa chỉ rạp
 		dto.setReviewContents((String) firstTuple.get(15)); // Các đánh giá
+
 		if (firstTuple.get(16) == null) {
 			dto.setAverageRating(0);
 			dto.setReviewCount(0); // Số lượng đánh giá
@@ -163,6 +189,7 @@ public class MovieService {
 			dto.setRating3_4((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 3 đến 4
 			dto.setRating1_2((Integer) firstTuple.get(22)); // Số lượng đánh giá từ 1 đến 2
 		}
+		// hiển thị trạng thái thích hay không thích
 		Object value = firstTuple.get(23);
 		if (value instanceof Boolean) {
 			dto.setFavourite((Boolean) value);

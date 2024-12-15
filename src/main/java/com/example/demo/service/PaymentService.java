@@ -20,6 +20,7 @@ import com.example.demo.mservice.models.PaymentResponse;
 import com.example.demo.mservice.processor.CreateOrderMoMo;
 import com.example.demo.mservice.shared.utils.LogUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -58,7 +59,9 @@ public class PaymentService {
         return response;
     }
 
-public Map<String, String> paymentWithVnPay(long amount, String id) throws UnsupportedEncodingException {
+public Map<String, String> paymentWithVnPay(long amount, String id, HttpServletRequest request) throws UnsupportedEncodingException {
+    log.info("Starting VNPay payment for id: {}, amount: {}", id, amount);
+
     amount = amount * 100;
     String vnp_Version = "2.1.0"; // Phiên bản API VNPay
     String vnp_Command = "pay";   // Lệnh thanh toán
@@ -68,6 +71,9 @@ public Map<String, String> paymentWithVnPay(long amount, String id) throws Unsup
     String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
 
     PaymentVNPAYConfig.vnp_ReturnUrl += id;
+
+    // Lấy IP client từ request
+    String clientIp = PaymentVNPAYConfig.getIpAddress(request);
 
     Map<String, String> vnp_Params = new HashMap<>();
     vnp_Params.put("vnp_Version", vnp_Version);
@@ -81,6 +87,7 @@ public Map<String, String> paymentWithVnPay(long amount, String id) throws Unsup
     vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
     vnp_Params.put("vnp_OrderType", orderType);
     vnp_Params.put("vnp_ReturnUrl", PaymentVNPAYConfig.vnp_ReturnUrl);
+    vnp_Params.put("vnp_IpAddr", clientIp); // Thêm IP client vào vnp_Params
 
     Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
@@ -96,27 +103,27 @@ public Map<String, String> paymentWithVnPay(long amount, String id) throws Unsup
     Collections.sort(fieldNames);
     StringBuilder hashData = new StringBuilder();
     StringBuilder query = new StringBuilder();
+
     for (String fieldName : fieldNames) {
         String fieldValue = vnp_Params.get(fieldName);
-        if (fieldValue != null && fieldValue.length() > 0) {
-            hashData.append(fieldName).append('=')
-                    .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-            query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()))
-                    .append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+        if (fieldValue != null && !fieldValue.isEmpty()) {
+            hashData.append(fieldName).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+            query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII)).append('=').append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
             if (!fieldName.equals(fieldNames.get(fieldNames.size() - 1))) {
                 query.append('&');
                 hashData.append('&');
             }
         }
     }
-    String queryUrl = query.toString();
+
     String vnp_SecureHash = PaymentVNPAYConfig.hmacSHA512(PaymentVNPAYConfig.secretKey, hashData.toString());
-    queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-    String paymentUrl = PaymentVNPAYConfig.vnp_PayUrl + "?" + queryUrl;
+    String paymentUrl = PaymentVNPAYConfig.vnp_PayUrl + "?" + query + "&vnp_SecureHash=" + vnp_SecureHash;
+
+    log.info("Generated VNPay payment URL: {}", paymentUrl);
 
     Map<String, String> response = new HashMap<>();
     response.put("status", "OK");
-    response.put("message", "Successfully");
+    response.put("message", "Successfully generated VNPay payment URL");
     response.put("paymentUrl", paymentUrl);
 
     return response;
