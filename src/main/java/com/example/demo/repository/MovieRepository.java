@@ -146,13 +146,12 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 			        FROM MovieGenre mg
 			        JOIN Genre g ON mg.IdGenre = g.IdGenre
 			        WHERE mg.MovieID = m.MovieID
-			    ) AS Genres, 
-			    ROUND(AVG(r.Rating), 2) AS AverageRating
+			    ) AS Genres
 			FROM 
 			    Movies m
 			LEFT JOIN  
-			    Rate r ON m.MovieID = r.MovieID
-			where r.UserId = :userId
+			    Favourite f ON m.MovieID = f.MovieID
+			where f.UserId = :userId
 			GROUP BY 
 			    m.MovieID, m.Title, m.PosterUrl
 			""", nativeQuery = true)
@@ -201,4 +200,29 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 			""", nativeQuery = true)
 	List<Tuple> findMovieByStatus(@Param("status") String status);
 	
+	@Query(value = """
+			  SELECT 
+			    m.MovieID,
+			    m.PosterUrl,
+				m.Title,
+			    (SELECT STRING_AGG(g.GenreName, ', ') 
+			        FROM MovieGenre mg
+			        JOIN Genre g ON mg.IdGenre = g.IdGenre
+			        WHERE mg.MovieID = m.MovieID
+			    ) AS Genres, 
+			    ROUND(AVG(r.Rating), 2) AS AverageRating
+			FROM 
+			    Movies m
+			LEFT JOIN  
+			    Rate r ON m.MovieID = r.MovieID
+			JOIN
+				MovieGenre mg ON mg.MovieID = m.MovieID
+			JOIN
+				Genre g ON g.IdGenre = mg.IdGenre
+			where g.GenreName = :genre
+
+			GROUP BY 
+			    m.MovieID, m.Title, m.PosterUrl
+			""", nativeQuery = true)
+	List<Tuple> findMovieByGenre(@Param("genre") String genre);
 }

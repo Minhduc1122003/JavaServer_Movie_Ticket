@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.MovieDetailDTO;
 import com.example.demo.dto.MovieViewDTO;
+import com.example.demo.dto.MovieViewFavourite;
 import com.example.demo.entity.Genre;
 import com.example.demo.entity.Movie;
 import com.example.demo.entity.MovieGenre;
@@ -62,8 +63,28 @@ public class MovieService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<MovieViewDTO> getAllMoviesViewByUserId(int userId) {
+	public List<MovieViewFavourite> getAllMoviesViewByUserId(int userId) {
 		List<Tuple> tuples = movieRepository.findMovieByUserId(userId);
+
+		if (tuples == null) {
+			return null;
+		}
+
+		return tuples.stream().map(tuple -> {
+			MovieViewFavourite dto = new MovieViewFavourite();
+
+			dto.setMovieId(tuple.get("MovieID", Integer.class));
+			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
+			dto.setTitle(tuple.get("Title", String.class));
+			String genresString = tuple.get("Genres", String.class);
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
+			dto.setGenres(genres);
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	public List<MovieViewDTO> getMoviesByStatusView(String statusMovie) {
+		List<Tuple> tuples = movieRepository.findMovieByStatus(statusMovie);
 
 		if (tuples == null) {
 			return null;
@@ -86,9 +107,9 @@ public class MovieService {
 			return dto;
 		}).collect(Collectors.toList());
 	}
-
-	public List<MovieViewDTO> getMoviesByStatusView(String statusMovie) {
-		List<Tuple> tuples = movieRepository.findMovieByStatus(statusMovie);
+	
+	public List<MovieViewDTO> getMoviesByGenreView(String genre) {
+		List<Tuple> tuples = movieRepository.findMovieByGenre(genre);
 
 		if (tuples == null) {
 			return null;
@@ -101,7 +122,7 @@ public class MovieService {
 			dto.setPosterUrl(tuple.get("PosterUrl", String.class));
 			dto.setTitle(tuple.get("Title", String.class));
 			String genresString = tuple.get("Genres", String.class);
-			List<String> genres = Arrays.asList(genresString, ", ");
+			List<String> genres = Arrays.asList(genresString.split(",\\s*"));
 			dto.setGenres(genres);
 			if (tuple.get("AverageRating") == null) {
 				dto.setRating(0);

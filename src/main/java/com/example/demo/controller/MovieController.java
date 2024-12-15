@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.dto.MovieDetailDTO;
 import com.example.demo.dto.MovieRequest;
 import com.example.demo.dto.MovieViewDTO;
+import com.example.demo.dto.MovieViewFavourite;
 import com.example.demo.entity.Movie;
 import com.example.demo.repository.MovieRepository;
 import com.example.demo.service.FirebaseStorageService;
@@ -56,13 +57,18 @@ public class MovieController {
     }
     
     @GetMapping("/getAllFavouriteMovieByUserId/{id}")
-	public List<MovieViewDTO> getAllByUserId(@PathVariable int id){
+	public List<MovieViewFavourite> getAllByUserId(@PathVariable int id){
 		return movieService.getAllMoviesViewByUserId(id);
 	}
     
-    @GetMapping("/getAllMovieView/{statusMovie}")
+    @GetMapping("/getAllMovieViewStatus/{statusMovie}")
     public List<MovieViewDTO> getMovieByStatusView(@PathVariable String statusMovie){
     	return movieService.getMoviesByStatusView(statusMovie);
+    }
+    
+    @GetMapping("/getAllMovieViewGenre/{genre}")
+    public List<MovieViewDTO> getMovieByGenreView(@PathVariable String genre){
+    	return movieService.getMoviesByGenreView(genre);
     }
     
     @GetMapping("/getMovieDetail/{movieId}")
