@@ -12,7 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,14 @@ public ResponseEntity<?> getPaymentVnpay(@RequestParam long amount, @RequestPara
         return ResponseEntity.badRequest().body("Error while processing VNPay payment");
     }
 }
+@GetMapping("/server-time")
+public ResponseEntity<?> getServerTime() {
+    Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    String serverTime = formatter.format(cld.getTime());
+    return ResponseEntity.ok(serverTime);
+}
+
 
 
 	@PostMapping("/vnpay/callback")
