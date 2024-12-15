@@ -14,6 +14,6 @@ import jakarta.transaction.Transactional;
 public interface BuyTicketInfoRepository extends JpaRepository<BuyTicketInfo, Integer>{
 	@Modifying
     @Transactional
-    @Query(value = "UPDATE BuyTicketInfo SET status = :status WHERE BuyTicketInfoId = :id;", nativeQuery = true)
-    void updateStatusById(@Param("id") Integer id, @Param("status") String status);
+    @Query(value = "UPDATE BuyTicketInfo SET status = :status WHERE BuyTicketId = :id;", nativeQuery = true)
+    void updateStatusById(@Param("id") String id, @Param("status") String status);
 }

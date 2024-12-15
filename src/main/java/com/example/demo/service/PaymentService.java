@@ -67,7 +67,7 @@ public class PaymentService {
         String vnp_Command = "pay";   // Lệnh thanh toán
         String orderType = "other";   // Loại đơn hàng (ở đây là "other")
         String bankCode = "NCB";      // Mã ngân hàng mặc định (test NCB)
-        String vnp_TxnRef = PaymentVNPAYConfig.getRandomNumber(8); // Số tham chiếu đơn hàng (ngẫu nhiên)
+        String vnp_TxnRef = id; // Số tham chiếu đơn hàng (ngẫu nhiên)
         String vnp_TmnCode = PaymentVNPAYConfig.vnp_TmnCode;
 
         // Lấy IP client từ query parameter (thay vì từ request header)
@@ -88,7 +88,7 @@ public class PaymentService {
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
-        vnp_Params.put("vnp_ReturnUrl", PaymentVNPAYConfig.vnp_ReturnUrl);
+        vnp_Params.put("vnp_ReturnUrl", PaymentVNPAYConfig.vnp_ReturnUrl += id);
         vnp_Params.put("vnp_IpAddr", clientIp); // Thêm IP client vào vnp_Params
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
