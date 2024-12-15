@@ -7,6 +7,7 @@ import com.example.demo.config.PaymentVNPAYConfig;
 import com.example.demo.repository.BuyTicketInfoRepository;
 import com.example.demo.service.PaymentService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URLEncoder;
@@ -44,25 +45,18 @@ public class PaymentController {
 
 	}
 
-	@GetMapping("/vnpay")
-	public ResponseEntity<?> getPaymentVnpay(@RequestParam long amount, @RequestParam String id) {
-		try {
-			Map<String, String> response = paymentService.paymentWithVnPay(amount, id);
-			try {
-				log.info(String.valueOf(id));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			log.info("Payment request URL generated for id: {}", id);
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			log.error("Error while processing Vnpay payment : {}", e);
-			return ResponseEntity.badRequest().body("Error while processing Vnpay payment");
-		}
+@GetMapping("/vnpay")
+public ResponseEntity<?> getPaymentVnpay(@RequestParam long amount, @RequestParam String id, HttpServletRequest request) {
+    log.info("Received VNPay payment request for id: {}, amount: {}", id, amount);
+    try {
+        Map<String, String> response = paymentService.paymentWithVnPay(amount, id, request);
+        return ResponseEntity.ok(response);
+    } catch (Exception e) {
+        log.error("Error while processing VNPay payment for id: {}", id, e);
+        return ResponseEntity.badRequest().body("Error while processing VNPay payment");
+    }
+}
 
-	}
 
 	@PostMapping("/vnpay/callback")
 	public ResponseEntity<?> handleVnpayCallback(@RequestBody Map<String, String> params) {
