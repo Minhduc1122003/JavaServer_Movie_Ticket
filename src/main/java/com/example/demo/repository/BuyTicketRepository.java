@@ -22,4 +22,12 @@ public interface BuyTicketRepository extends JpaRepository<BuyTicket, String>{
 			ORDER BY bi.createDate DESC;
 			""", nativeQuery = true)
 	List<Tuple> getHistory(@Param("userId") Integer userId);
+	
+	@Query(value = """
+			select bti.isCheckIn
+			from BuyTicket b
+			JOIN BuyTicketInfo bti ON b.BuyTicketId = bti.BuyTicketId
+			where b.UserId = :userId and b.MovieID = :movieId and bti.IsCheckIn = 1
+			""", nativeQuery = true)
+	List<Tuple> getBuyTicketInfoAllowReview(@Param("userId") Integer userId, @Param("movieId") Integer movieId);
 }

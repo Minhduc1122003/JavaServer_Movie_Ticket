@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MovieDetailDTO {
 	private int movieId;
+	private String statusMovie;
     private String title;
     private String description;
     private int duration;

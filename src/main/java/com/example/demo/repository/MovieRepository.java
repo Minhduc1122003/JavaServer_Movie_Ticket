@@ -21,6 +21,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	@Query(value = """
 			SELECT 
 			    m.movieID, 
+				m.statusMovie,
 			    m.title, 
 			    m.description, 
 			    m.duration, 
@@ -63,6 +64,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 			    m.movieID = :movieId
 			GROUP BY 
 			    m.movieID, 
+				m.statusMovie,
 			    m.title, 
 			    m.description, 
 			    m.duration, 
@@ -82,7 +84,8 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	
 	@Query(value = """
 	        SELECT 
-	            m.movieID, 
+	            m.movieID,
+				m.statusMovie,
 	            m.title, 
 	            m.description, 
 	            m.duration, 
@@ -122,6 +125,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	            m.movieID = :movieId
 	        GROUP BY 
 	            m.movieID, 
+				m.statusMovie,
 	            m.title, 
 	            m.description, 
 	            m.duration, 

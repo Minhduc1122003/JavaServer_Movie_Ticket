@@ -35,4 +35,14 @@ public class BuyTicketService {
 			return dto;
 		}).collect(Collectors.toList());
 	}
+	
+	public Boolean allowReview(int userId, int movieId) {
+		List<Tuple> tuples = buyticketRepository.getBuyTicketInfoAllowReview(userId, movieId);
+		
+		if(tuples.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

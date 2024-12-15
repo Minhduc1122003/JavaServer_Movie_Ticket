@@ -155,24 +155,25 @@ public class MovieService {
 		MovieDetailDTO dto = new MovieDetailDTO();
 		// Thiết lập các thuộc tính cho dto từ firstTuple
 		dto.setMovieId((Integer) firstTuple.get(0)); // ID phim
-		dto.setTitle((String) firstTuple.get(1)); // Tiêu đề phim
-		dto.setDescription((String) firstTuple.get(2)); // Mô tả phim
-		dto.setDuration((Integer) firstTuple.get(3)); // Thời lượng phim
-		dto.setReleaseDate((Date) firstTuple.get(4)); // Ngày phát hành
-		dto.setPosterUrl((String) firstTuple.get(5)); // URL ảnh poster
-		dto.setTrailerUrl((String) firstTuple.get(6)); // URL video trailer
-		dto.setAge((String) firstTuple.get(7)); // Độ tuổi
-		dto.setSubTitle((Boolean) firstTuple.get(8)); // Phụ đề
-		dto.setVoiceover((Boolean) firstTuple.get(9)); // Lồng ghép
+		dto.setStatusMovie((String) firstTuple.get(1));
+		dto.setTitle((String) firstTuple.get(2)); // Tiêu đề phim
+		dto.setDescription((String) firstTuple.get(3)); // Mô tả phim
+		dto.setDuration((Integer) firstTuple.get(4)); // Thời lượng phim
+		dto.setReleaseDate((Date) firstTuple.get(5)); // Ngày phát hành
+		dto.setPosterUrl((String) firstTuple.get(6)); // URL ảnh poster
+		dto.setTrailerUrl((String) firstTuple.get(7)); // URL video trailer
+		dto.setAge((String) firstTuple.get(8)); // Độ tuổi
+		dto.setSubTitle((Boolean) firstTuple.get(9)); // Phụ đề
+		dto.setVoiceover((Boolean) firstTuple.get(10)); // Lồng ghép
 
-		dto.setPrice((Double) firstTuple.get(10)); // Giá vé
-		dto.setActors((String) firstTuple.get(11)); // Diễn viên
-		dto.setGenres((String) firstTuple.get(12)); // Thể loại phim
-		dto.setCinemaName((String) firstTuple.get(13)); // Tên rạp
-		dto.setCinemaAddress((String) firstTuple.get(14)); // Địa chỉ rạp
-		dto.setReviewContents((String) firstTuple.get(15)); // Các đánh giá
+		dto.setPrice((Double) firstTuple.get(11)); // Giá vé
+		dto.setActors((String) firstTuple.get(12)); // Diễn viên
+		dto.setGenres((String) firstTuple.get(13)); // Thể loại phim
+		dto.setCinemaName((String) firstTuple.get(14)); // Tên rạp
+		dto.setCinemaAddress((String) firstTuple.get(15)); // Địa chỉ rạp
+		dto.setReviewContents((String) firstTuple.get(16)); // Các đánh giá
 
-		if (firstTuple.get(16) == null) {
+		if (firstTuple.get(17) == null) {
 			dto.setAverageRating(0);
 			dto.setReviewCount(0); // Số lượng đánh giá
 			dto.setRating9_10(0); // Số lượng đánh giá từ 9 đến 10
@@ -181,16 +182,16 @@ public class MovieService {
 			dto.setRating3_4(0); // Số lượng đánh giá từ 3 đến 4
 			dto.setRating1_2(0); // Số lượng đánh giá từ 1 đến 2
 		} else {
-			dto.setAverageRating((Double) firstTuple.get(16)); // Đánh giá trung bình
-			dto.setReviewCount((Integer) firstTuple.get(17)); // Số lượng đánh giá
-			dto.setRating9_10((Integer) firstTuple.get(18)); // Số lượng đánh giá từ 9 đến 10
-			dto.setRating7_8((Integer) firstTuple.get(19)); // Số lượng đánh giá từ 7 đến 8
-			dto.setRating5_6((Integer) firstTuple.get(20)); // Số lượng đánh giá từ 5 đến 6
-			dto.setRating3_4((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 3 đến 4
-			dto.setRating1_2((Integer) firstTuple.get(22)); // Số lượng đánh giá từ 1 đến 2
+			dto.setAverageRating((Double) firstTuple.get(17)); // Đánh giá trung bình
+			dto.setReviewCount((Integer) firstTuple.get(18)); // Số lượng đánh giá
+			dto.setRating9_10((Integer) firstTuple.get(19)); // Số lượng đánh giá từ 9 đến 10
+			dto.setRating7_8((Integer) firstTuple.get(20)); // Số lượng đánh giá từ 7 đến 8
+			dto.setRating5_6((Integer) firstTuple.get(21)); // Số lượng đánh giá từ 5 đến 6
+			dto.setRating3_4((Integer) firstTuple.get(22)); // Số lượng đánh giá từ 3 đến 4
+			dto.setRating1_2((Integer) firstTuple.get(23)); // Số lượng đánh giá từ 1 đến 2
 		}
 		// hiển thị trạng thái thích hay không thích
-		Object value = firstTuple.get(23);
+		Object value = firstTuple.get(24);
 		if (value instanceof Boolean) {
 			dto.setFavourite((Boolean) value);
 		} else {
