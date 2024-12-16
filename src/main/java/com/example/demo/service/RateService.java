@@ -55,6 +55,16 @@ public class RateService {
     		return dto;
     	}).collect(Collectors.toList());
     }
+    
+    public Boolean allowRate(int userId, int movieId) {
+		List<Tuple> rates = rateRepository.getRated(userId, movieId);
+		
+		if(rates.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
     public Rate getRateById(int idRate) {
         return rateRepository.findById(idRate).orElse(null);

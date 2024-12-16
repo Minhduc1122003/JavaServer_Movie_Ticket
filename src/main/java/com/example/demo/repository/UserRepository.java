@@ -60,7 +60,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 			JOIN Showtime st ON bti.ShowtimeID = st.ShowtimeID
 			JOIN CinemaRoom cr ON st.CinemaRoomID = cr.CinemaRoomID
 			JOIN Cinemas c ON cr.CinemaID = c.CinemaID
-			where u.UserId = :userId and bti.Status = N'Đã thanh toán'
+			WHERE u.UserId = :userId 
+			AND bti.Status COLLATE SQL_Latin1_General_CP1_CI_AI = N'Đã thanh toán'
 			GROUP BY
 			bti.BuyTicketInfoId, bti.BuyTicketId, m.posterUrl, m.title, st.showtimeDate, st.startTime, c.cinemaName, bti.TotalPrice, bti.isCheckIn
 			ORDER BY

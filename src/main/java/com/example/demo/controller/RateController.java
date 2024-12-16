@@ -69,5 +69,17 @@ public class RateController {
         rateService.deleteRate(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/allowRate")
+	public ResponseEntity<?> getAllowRevie(@RequestParam int userId, @RequestParam int movieId) {
+		boolean allow = rateService.allowRate(userId, movieId);
+
+		if (allow) {
+			return ResponseEntity.ok().body(Map.of("status", "success", "message", "Người dùng chưa đánh giá phim này."));
+		} else {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
+					.body(Map.of("status", "error", "message", "Người dùng đã đánh giá phim này."));
+		}
+	}
 }
 

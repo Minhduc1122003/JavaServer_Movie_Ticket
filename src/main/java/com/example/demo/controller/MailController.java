@@ -111,7 +111,6 @@ public class MailController {
 		if (storeOtp != null && storeOtp.equals(otp)) {
 			otpStorage.remove(email); // Xóa mã OTP sau khi xác minh thành công
 			return ResponseEntity.ok("OTP verified successfully, proceed to the next page.");
-
 		} else {
 			return ResponseEntity.status(400).body("Invalid OTP.");
 		}

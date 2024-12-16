@@ -22,4 +22,11 @@ public interface RateRepository extends JpaRepository<Rate, Integer>{
 		  ORDER BY r.RatingDate ASC
 			""", nativeQuery = true)
 	List<Tuple> getAllRateByMovieId(@Param("movieId") int movieId);
+	
+	@Query(value = """
+			select movieId 
+			from rate
+			where UserId = :userId and MovieID = :movieId
+			""", nativeQuery = true)
+	List<Tuple> getRated(@Param("userId") Integer userId, @Param("movieId") Integer movieId);
 }
